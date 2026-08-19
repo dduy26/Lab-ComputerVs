@@ -1,0 +1,1 @@
+Phân tích chi tiết đề bài, mục tiêu cần đạt được và các tính năng cốt lõi theo workflow.
