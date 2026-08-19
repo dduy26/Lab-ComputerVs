@@ -1,0 +1,11 @@
+Câu 4: Làm thể nào để áp dụng Canny cho các video?
+Video về bản chất là một chuỗi các khung hình (frames) tĩnh nối tiếp nhau theo thời gian. Do đó, để áp dụng Canny cho video, quy trình tổng quát bao gồm các bước chính sau:
+1. Đọc video theo từng khung hình (Frame-by-frame processing)Sử dụng thư viện OpenCV (cv2.VideoCapture) để tách video thành từng khung hình đơn lẻ.Vòng lặp sẽ duyệt qua từng khung hình để thực hiện thuật toán Canny tương tự như xử lý ảnh tĩnh: Làm mịn Gaussian $\rightarrow$ Tính Gradient $\rightarrow$ Non-maximum Suppression $\rightarrow$ Ngưỡng kép $\rightarrow$ Theo dõi cạnh (Hysteresis)
+2. Khử nhiễu không gian và thời gian (Spatial & Temporal Filtering)
+Nhiễu không gian (Spatial Noise): Áp dụng bộ lọc Gaussian hoặc Bilateral Filter trên từng khung hình trước khi chạy Canny.
+Nhiễu thời gian (Temporal Flicker): Giữa các khung hình liên tiếp thường xuất hiện hiện tượng nhấp nháy nét cạnh do nhiễu ánh sáng. Cần kết hợp kỹ thuật làm mịn theo trục thời gian (ví dụ: lấy trung bình trọng số giữa các khung hình kề nhau cv2.addWeighted) để giữ đường biên ổn định, mượt mà hơn.
+3. Tối ưu hóa hiệu suất (Real-time Optimization)
+Thuật toán Canny tính toán tương đối tốn tài nguyên. Để video chạy mượt mà theo thời gian thực (đạt 30–60 FPS):
+Giảm độ phân giải: Giảm kích thước khung hình (cv2.resize) trước khi xử lý.
+Xác định vùng quan tâm (ROI - Region of Interest): Chỉ áp dụng Canny lên vùng hình ảnh cần thiết (ví dụ: nửa dưới khung hình nếu cần tìm làn đường xe chạy).
+Xử lý song song: Dùng GPU (OpenCV CUDA) hoặc đa luồng (Multi-threading).
