@@ -19,3 +19,6 @@ Công việc đã được kiểm tra kỹ lưỡng, chạy thành công, hình 
 [BLOCKED] — [BỊ KẸT / GẶP LỖI]:
 
 Công việc đang bị tạm dừng do gặp lỗi kỹ thuật chưa giải quyết được (ví dụ: lỗi thư viện, xung đột code, thiếu dữ liệu) và cần sự hỗ trợ từ các thành viên khác hoặc nhóm trưởng.
+
+## Phước (Scikit‑image) - canny_skimage
+- [DONE] — Đã tạo thư mục riêng, chạy thực nghiệm trên 2 ảnh, lưu đầy đủ kết quả và báo cáo.
