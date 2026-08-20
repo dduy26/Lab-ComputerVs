@@ -1,39 +1,32 @@
-# TIẾN ĐỘ THỰC HIỆN & AUDIT LOG - LAB-2-P2
+# TIẾN ĐỘ THỰC HIỆN & ROADMAP DỰ ÁN - LAB-2-P2
 
-Tài liệu cập nhật tiến độ công việc theo mô hình **Roadmap** và **Nhật ký Audit Kiểm thử (Audit Log)** cho bài thực hành Canny OpenCV.
-
----
-
-## 1. Roadmap Tiến độ Dự án
-
-###  Phước (Scikit-image) - `canny_skimage/`
-- [DONE] Tạo thư mục riêng, chạy thực nghiệm 2 ảnh, lưu kết quả và báo cáo.
+Tài liệu cập nhật tiến độ công việc theo mô hình **Roadmap** cho tất cả 7 thành viên trong nhóm.
 
 ---
 
-### 👤 Thành viên 4: Duy (OpenCV Canny - II.1 & II.2)
-- [DONE] **II.1 - Canny OpenCV Baseline & Ứng dụng Thực tế**:
-  - Đọc ảnh xám, tiền xử lý mờ Gaussian (`cv2.GaussianBlur`).
-  - Phân đoạn đường biên bằng Contour & vẽ Bounding Box (`cv2.findContours`, `cv2.boundingRect`).
-  - Nhận dạng hình học bằng phép biến đổi Hough Lines (`cv2.HoughLinesP`) & Hough Circles (`cv2.HoughCircles`).
-- [DONE] **II.2.1 - Khảo sát Biến đổi Sigma (Làm mờ Gaussian)**:
-  - Thử nghiệm 3 mức `sigma = 1, 2, 5`.
-  - **Đánh giá định lượng**: Đếm chính xác số pixel cạnh bằng `np.count_nonzero()`.
-- [DONE] **II.2.2 - Khảo sát Bộ Ngưỡng Kép (Threshold Low / High)**:
-  - Thử nghiệm 3 bộ ngưỡng: `50-150` (Thấp/Nhạy), `100-200` (Mặc định/Cân bằng), `150-300` (Cao/Lọc mạnh).
-  - **Đánh giá định lượng**: Đếm số pixel cạnh `np.count_nonzero()` tương ứng.
-- [DONE] **II.2.3 - Trực quan hóa & So sánh Kết quả**:
-  - Hiển thị lưới 2x3 cho khảo sát tham số (Sigma & Thresholds).
-  - Hiển thị lưới 2x2 cho phần ứng dụng thực tế (Anh gốc, Canny, Contour, Hough).
+## 1. Roadmap Tiến độ 7 Thành viên
+
+### 📖 Phần I & Phần III: Lý thuyết & Câu hỏi mở rộng
+- [DONE] **Thành viên 1: Đức** (I.1 a+b, III.1) $\rightarrow$ Lý thuyết 5 bước Canny, so sánh Sobel/Laplacian, phương pháp đánh giá chất lượng cạnh.
+- [DONE] **Thành viên 2: Thọ** (I.2 a+b, III.2) $\rightarrow$ Phân tích tham số Sigma, Ngưỡng Low/High, phương pháp nâng cao hiệu suất.
+- [DONE] **Thành viên 3: Thông** (I.3 a+b+c, III.3) $\rightarrow$ Ưu/nhược điểm Canny, lĩnh vực ứng dụng, Canny cho ảnh màu.
 
 ---
 
-## 2. Nhật ký Audit Kiểm thử (Audit Log)
+### 💻 Phần II & III.4: Bài tập thực hành & Video
+- [DONE] **Thành viên 4: Duy** (**II.1 OpenCV & II.2 OpenCV**):
+  - Trích xuất cạnh Canny OpenCV mặc định baseline (`100, 200`).
+  - Khảo sát mờ Gaussian với `sigma = [1, 2, 3, 4, 5]`, đếm pixel `np.count_nonzero()`.
+  - Khảo sát bộ ngưỡng Low/High `(30, 90)` đến `(200, 300)`.
+  - Trực quan hóa Lưới 2x3 so sánh đối chứng với Canny Mặc định OpenCV.
+  - *Tệp thực thi:* `notebook/4.py` (Phần II.1 & II.2).
 
-| Audit ID | Người Audit | Nội dung kiểm thử | Cấu hình & Hàm thử nghiệm | Kết quả nghiệm thu & Thống kê | Trạng thái |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **AUDIT-01** | Duy (TV4) | Thống kê định lượng số pixel cạnh theo Sigma | `GaussianBlur(gray, (5,5), sigma)` với `sigma = 1, 2, 5` | Đếm thành công bằng `np.count_nonzero()`. Sigma càng lớn số pixel cạnh thu được càng giảm (do đường biên được làm mịn). | **PASS** |
-| **AUDIT-02** | Duy (TV4) | Thống kê định lượng số pixel cạnh theo Threshold | Bộ ngưỡng: `50-150`, `100-200`, `150-300` | Ngưỡng `50-150` cho số lượng pixel cạnh cao nhất (nhiều nét), `150-300` cho ít pixel nhất (lọc sạch nhiễu). | **PASS** |
-| **AUDIT-03** | Duy (TV4) | Hiển thị Lưới 2x3 So sánh Tham số | Matplotlib Subplots `(2, 3)` | Trực quan hóa rõ ràng sự khác biệt giữa 3 mức Sigma và 3 bộ ngưỡng Threshold. | **PASS** |
-| **AUDIT-04** | Duy (TV4) | Kiểm thử Phân đoạn Contour & Hough Transform | `cv2.findContours`, `cv2.HoughLinesP`, `cv2.HoughCircles` | Nhận dạng và vẽ thành công Bounding Box đường biên, đoạn thẳng Hough Lines và đường tròn Hough Circles. | **PASS** |
-| **AUDIT-05** | Duy (TV4) | Kiểm định mã nguồn `notebook/4.py` | Cấu trúc code trong `notebook/4.py` | Code ngắn gọn, phân chia rõ ràng giữa thống kê số liệu `np.count_nonzero()` và hiển thị đồ thị `plt.show()`. | **VERIFIED** |
+- [DONE] **Thành viên 5: Phước** (II.1 & II.2 Scikit-image):
+  - Hoàn thành thực hành Canny bằng `skimage.feature.canny` trong thư mục `canny_skimage/`.
+
+- [IN_PROGRESS] **Thành viên 6: Vinh** (II.3):
+  - Áp dụng Canny trên nhiều loại ảnh (ảnh nhiễu, ảnh độ tương phản thấp, ảnh nhiều chi tiết).
+
+- [DONE] **Thành viên 7: Huy** (II.4 & III.4):
+  - Kết hợp Canny với Phân đoạn Contour & Nhận dạng Hough Transform trong `notebook/4.py` (Phần II.4).
+  - Trả lời câu hỏi mở rộng Canny cho Video trong `docs/Câu hỏi mở rộng`.

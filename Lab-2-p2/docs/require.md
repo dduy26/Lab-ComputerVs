@@ -1,72 +1,49 @@
-# YÊU CẦU BÀI TẬP & CÂU HỎI - PHẦN II.1 & II.2 (OPENCV CANNY)
-**Thành viên:** Duy (Thành viên 4)  
-**Thư viện sử dụng:** OpenCV (`cv2`), Matplotlib  
-**File code duy nhất:** `notebook/4.py`  
+# BÀI TẬP BÁO CÁO NHÓM - LAB-2-P2: THUẬT TOÁN PHÁT HIỆN CẠNH CANNY
 
 ---
 
-## II.1. Thực hiện thuật toán Canny bằng thư viện OpenCV
+## 📌 PHÂN CÔNG NHIỆM VỤ CHI TIẾT (7 THÀNH VIÊN)
 
-### 1. Nội dung cần làm
-- Giới thiệu hàm `cv2.Canny()` của thư viện OpenCV:
-  ```python
-  cv2.Canny(image, threshold1, threshold2)
-  ```
-  - `image`: Ảnh đầu vào (ảnh xám).
-  - `threshold1`: Ngưỡng thấp (Low threshold).
-  - `threshold2`: Ngưỡng cao (High threshold).
+### 📖 NGUYÊN LÝ LÝ THUYẾT & CÂU HỎI MỞ RỘNG (PHẦN I & PHẦN III)
 
-### 2. Ví dụ chương trình (`notebook/4.py`)
-```python
-import cv2
-import matplotlib.pyplot as plt
+#### 1. Thành viên 1: Đức $\rightarrow$ Phần I.1 (a + b) + III.1
+- **I.1.a**: Tìm hiểu và giải thích chi tiết 5 bước của thuật toán Canny: Giảm nhiễu (Gaussian), Tính toán Gradient, Non-maximum Suppression (NMS), Ngưỡng kép (Double Thresholding), Theo dõi cạnh (Hysteresis).
+- **I.1.b**: So sánh Canny với các thuật toán phát hiện cạnh khác như Sobel, Laplacian.
+- **III.1**: Phương pháp đánh giá chất lượng của các cạnh được phát hiện bởi Canny.
 
-img = cv2.imread("image.jpg", 0)
-edges = cv2.Canny(img, 100, 200)
+#### 2. Thành viên 2: Thọ $\rightarrow$ Phần I.2 (a + b) + III.2
+- **I.2.a**: Phân tích tham số Sigma trong Gaussian Filter và ảnh hưởng đến kết quả.
+- **I.2.b**: Phân tích ảnh hưởng của Ngưỡng thấp (Low threshold) và Ngưỡng cao (High threshold).
+- **III.2**: Các phương pháp nâng cao để cải thiện hiệu suất của Canny.
 
-plt.imshow(edges, cmap='gray')
-plt.show()
-```
-
-### 3. Kết quả yêu cầu
-- **Hình 1**: Ảnh gốc
-- **Hình 2**: Kết quả phát hiện cạnh bằng Canny (Ngưỡng mặc định 100, 200)
+#### 3. Thành viên 3: Thông $\rightarrow$ Phần I.3 (a + b + c) + III.3
+- **I.3.a**: So sánh Canny với các thuật toán khác về độ chính xác, tốc độ và khả năng xử lý nhiễu.
+- **I.3.b**: Các lĩnh vực ứng dụng Canny phổ biến nhất trong thực tế.
+- **I.3.c**: Ví dụ cụ thể về các ứng dụng thực tế của Canny Edge Detector.
+- **III.3**: Phương pháp áp dụng Canny phát hiện cạnh trong ảnh màu (Color Images).
 
 ---
 
-## II.2. Thay đổi các tham số và quan sát kết quả
+### 💻 BÀI TẬP THỰC HÀNH (PHẦN II)
 
-### 1. Thay đổi ngưỡng thấp và ngưỡng cao
-- **Trường hợp 1 (`50, 150`)**: Phát hiện được nhiều cạnh hơn, có thể xuất hiện cạnh nhiễu.
-- **Trường hợp 2 (`100, 200`)**: Kết quả cân bằng, loại bỏ được phần lớn nhiễu (Mặc định).
-- **Trường hợp 3 (`200, 300`)**: Chỉ giữ lại các cạnh mạnh, một số chi tiết nhỏ bị mất.
+#### 4. Thành viên 4: Duy $\rightarrow$ Phần II.1 (OpenCV) + Phần II.2 (OpenCV)
+> **Phụ trách chính trong `notebook/4.py` (Phần II.1 & II.2)**
+- **II.1**: Thực hiện thuật toán Canny bằng thư viện OpenCV (`cv2.Canny`).
+- **II.2**: Thay đổi các tham số và quan sát kết quả:
+  - Thay đổi Sigma làm mờ Gaussian ($1 \rightarrow 5$ bước nhảy 1), đếm số pixel cạnh `np.count_nonzero()`.
+  - Thay đổi Ngưỡng thấp (Low) và Ngưỡng cao (High), đếm `np.count_nonzero()`.
+  - So sánh kết quả thực nghiệm với các giá trị mặc định của OpenCV (`threshold1=100`, `threshold2=200`).
 
-### 2. Thay đổi Sigma (Gaussian Blur tiền xử lý)
-> OpenCV không truyền trực tiếp tham số Sigma vào `cv2.Canny()`, cần làm mờ bằng `cv2.GaussianBlur()` trước khi gọi Canny.
+#### 5. Thành viên 5: Phước $\rightarrow$ Phần II.1 (Scikit-image) + Phần II.2 (Scikit-image)
+- **II.1 & II.2**: Thực hiện thuật toán Canny bằng thư viện Scikit-image (`skimage.feature.canny`).
+- Thay đổi tham số (sigma, low_threshold, high_threshold) và so sánh với giá trị mặc định trên Scikit-image.
+- *Thực thi:* Thư mục `canny_skimage/`.
 
-- **Sigma nhỏ (`sigma = 1`)**:
-  ```python
-  blur = cv2.GaussianBlur(img, (5, 5), 1)
-  edges = cv2.Canny(blur, 100, 200)
-  ```
-  *Nhận xét:* Giữ được nhiều chi tiết, còn một ít nhiễu.
-- **Sigma trung bình (`sigma = 2`)**:
-  ```python
-  blur = cv2.GaussianBlur(img, (5, 5), 2)
-  edges = cv2.Canny(blur, 100, 200)
-  ```
-  *Nhận xét:* Giảm nhiễu tốt, cạnh rõ ràng.
-- **Sigma lớn (`sigma = 5`)**:
-  ```python
-  blur = cv2.GaussianBlur(img, (5, 5), 5)
-  edges = cv2.Canny(blur, 100, 200)
-  ```
-  *Nhận xét:* Nhiễu giảm mạnh, một số cạnh mảnh bị mất.
+#### 6. Thành viên 6: Vinh $\rightarrow$ Phần II.3
+- **II.3**: Áp dụng Canny cho các loại ảnh khác nhau (ảnh nhiều nhiễu, ảnh độ tương phản thấp, ảnh nhiều chi tiết). Đánh giá kết quả và rút ra kết luận.
 
-### 3. Bảng so sánh với giá trị mặc định
-
-| Trường hợp | Threshold Low | Threshold High | Kết quả nhận xét |
-| :--- | :---: | :---: | :--- |
-| **Mặc định** | 100 | 200 | Cân bằng giữa nhiễu và chi tiết |
-| **Thấp** | 50 | 150 | Nhiều cạnh, nhiều nhiễu |
-| **Cao** | 200 | 300 | Ít nhiễu nhưng mất chi tiết |
+#### 7. Thành viên 7: Huy $\rightarrow$ Phần II.4 + III.4
+- **II.4**: Kết hợp Canny với các kỹ thuật khác:
+  - Kết hợp thuật toán phân đoạn vùng tìm Contour & Bounding Box (`cv2.findContours`, `cv2.boundingRect`).
+  - Kết hợp thuật toán nhận dạng hình dạng tìm đường thẳng & đường tròn (`cv2.HoughLinesP`, `cv2.HoughCircles`).
+- **III.4**: Trả lời câu hỏi mở rộng: Phương pháp áp dụng Canny cho Video.

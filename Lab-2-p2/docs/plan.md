@@ -1,57 +1,24 @@
-# KẾ HOẠCH THỰC HIỆN - PHẦN II.1 & II.2 (OPENCV CANNY)
-**Thành viên thực hiện:** Duy (Thành viên 4)  
-**Tệp mã nguồn chính:** `notebook/4.py`  
+# KẾ HOẠCH THỰC HIỆN & PHÂN CÔNG TỔNG THỂ (LAB-2-P2)
 
 ---
 
-## 1. Cấu trúc Luồng Xử lý trong `notebook/4.py`
+## 📌 Bảng Phân công 7 Thành viên trong Nhóm
 
-Kế hoạch được tối ưu bám sát mã nguồn mới của Duy, kết hợp giữa khảo sát tham số định tính/định lượng và ứng dụng phân đoạn / nhận dạng hình học.
-
-```mermaid
-flowchart TD
-    A[Đọc ảnh & Chuyển ảnh xám] --> B[Khảo sát Sigma Gaussian Blur]
-    A --> C[Khảo sát Bộ Ngưỡng Kép Threshold]
-    B --> D[Đếm điểm ảnh cạnh np.count_nonzero]
-    C --> D
-    D --> E[Trực quan hóa Lưới 2x3 So sánh Tham số]
-    E --> F[Ứng dụng Phân đoạn Contour & Hough Transform]
-    F --> G[Trực quan hóa Lưới 2x2 Kết quả Ứng dụng]
-```
+| STT | Thành viên | Phần phụ trách | Nhiệm vụ chính | Phạm vi tệp tin |
+| :---: | :--- | :--- | :--- | :--- |
+| **1** | **Đức** | I.1 (a + b) + III.1 | Lý thuyết 5 bước Canny, so sánh Sobel/Laplacian, đánh giá chất lượng cạnh. | `docs/` |
+| **2** | **Thọ** | I.2 (a + b) + III.2 | Phân tích tham số Sigma, Ngưỡng Low/High, phương pháp nâng cao hiệu suất. | `docs/` |
+| **3** | **Thông** | I.3 (a + b + c) + III.3 | Ưu/nhược điểm Canny, lĩnh vực ứng dụng, Canny cho ảnh màu. | `docs/` |
+| **4** | **Duy** | **II.1 (OpenCV) + II.2 (OpenCV)** | **Canny OpenCV baseline, khảo sát Sigma $1\rightarrow 5$ bước nhảy 1, khảo sát Ngưỡng Low/High, đếm `np.count_nonzero()`, so sánh mặc định.** | **`notebook/4.py` (Phần II.1 & II.2)** |
+| **5** | **Phước** | II.1 & II.2 (Scikit-image) | Thực hành Canny bằng Scikit-image, khảo sát tham số trên skimage. | `canny_skimage/` |
+| **6** | **Vinh** | II.3 | Thử nghiệm Canny trên nhiều loại ảnh (nhiễu, tương phản thấp, chi tiết). | `docs/` |
+| **7** | **Huy** | II.4 + III.4 | Kết hợp Contour & Hough Transform, trả lời câu hỏi Canny cho Video. | `notebook/4.py` (Phần II.4) |
 
 ---
 
-## 2. Chi tiết các Bước Thực hiện
+## 📝 Chi tiết Kế hoạch của Duy (Thành viên 4)
 
-### Bước 1: Khảo sát Tham số Sigma (Gaussian Blur trước Canny)
-- Làm mờ ảnh với bộ lọc Gaussian Kernel $(5\times 5)$ và các mức `sigma = 1, 2, 5`.
-- Trích xuất cạnh bằng `cv2.Canny(blur, 100, 200)`.
-- **Thống kê định lượng**: Sử dụng `np.count_nonzero()` để đếm chính xác số pixel cạnh thu được ở từng mức Sigma.
-
-### Bước 2: Khảo sát Bộ Ngưỡng Kép (Threshold Low / High)
-- Sử dụng ảnh đã làm mờ (`sigma = 2`), áp dụng `cv2.Canny` với 3 bộ ngưỡng:
-  - `50 - 150`: Ngưỡng thấp, nhạy cạnh, phát hiện nhiều nét chi tiết và nhiễu.
-  - `100 - 200`: Ngưỡng mặc định OpenCV, kết quả cân bằng.
-  - `150 - 300`: Ngưỡng cao, chỉ giữ cạnh mạnh, loại bỏ nhiễu và đứt chi tiết mảnh.
-- **Thống kê định lượng**: Đếm số lượng pixel cạnh `np.count_nonzero()` cho từng bộ ngưỡng.
-
-### Bước 3: Trực quan hóa So sánh Tham số (Lưới 2x3)
-- Sử dụng `matplotlib.pyplot` tạo lưới 2 hàng x 3 cột:
-  - Hàng 1: Đồ thị kết quả Canny theo `Sigma = 1`, `Sigma = 2`, `Sigma = 5`.
-  - Hàng 2: Đồ thị kết quả Canny theo các bộ ngưỡng `50-150`, `100-200`, `150-300`.
-
-### Bước 4: Mở rộng Ứng dụng Phân đoạn & Nhận dạng (Lưới 2x2)
-- **Phân đoạn Contour**:
-  - Dùng `cv2.findContours` tìm đường biên từ `canny_edges`.
-  - Lọc contour diện tích $> 50$ và vẽ Bounding Box màu đỏ (`cv2.boundingRect`).
-- **Nhận dạng Hough Transform**:
-  - Phát hiện đoạn thẳng bằng `cv2.HoughLinesP`.
-  - Phát hiện đường tròn bằng `cv2.HoughCircles`.
-- **Hiển thị Lưới 2x2**: Ảnh gốc, Ảnh cạnh Canny, Phân đoạn Contour, Nhận dạng Hough.
-
----
-
-## 3. Thư viện & Công cụ Sử dụng
-- **`cv2`**: Chuyển màu, GaussianBlur, Canny, findContours, HoughLinesP, HoughCircles.
-- **`numpy`**: Đếm pixel nhị phân `np.count_nonzero()`, xử lý mảng.
-- **`matplotlib.pyplot`**: Trực quan hóa hình ảnh đa lưới (Subplots).
+1. **Khởi tạo Baseline Mặc định OpenCV**: `cv2.Canny(gray, 100, 200)` tính số pixel cạnh chuẩn đối chứng.
+2. **Khảo sát Sigma (1 -> 5 với bước nhảy 1)**: Vòng lặp `sigma = [1, 2, 3, 4, 5]`, đếm `np.count_nonzero()`.
+3. **Khảo sát Bộ Ngưỡng Low/High**: Thử nghiệm các bộ ngưỡng `(30, 90)`, `(50, 150)`, `(100, 200)`, `(150, 250)`, `(200, 300)`.
+4. **Trực quan hóa So sánh Đối chứng**: Hiển thị lưới Subplot 2x3 đối chiếu kết quả khảo sát với Baseline mặc định OpenCV.
