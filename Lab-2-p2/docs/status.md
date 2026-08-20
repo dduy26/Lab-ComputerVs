@@ -1,24 +1,39 @@
-Theo dõi tiến độ hoàn thành, ghi nhận các phần đã xong, phần đang làm hoặc các lỗi đang gặp phải của nhóm.
+# TIẾN ĐỘ THỰC HIỆN & AUDIT LOG - LAB-2-P2
 
-[TODO] — [CHƯA BẮT ĐẦU]:
+Tài liệu cập nhật tiến độ công việc theo mô hình **Roadmap** và **Nhật ký Audit Kiểm thử (Audit Log)** cho bài thực hành Canny OpenCV.
 
-Công việc đã được lên kế hoạch và phân công nhưng chưa có thành viên nào bắt đầu tiến hành.
+---
 
-[IN_PROGRESS] — [ĐANG THỰC HIỆN]:
+## 1. Roadmap Tiến độ Dự án
 
-Thành viên được phân công đang tiến hành viết code, nghiên cứu lý thuyết hoặc soạn thảo nội dung báo cáo.
+###  Phước (Scikit-image) - `canny_skimage/`
+- [DONE] Tạo thư mục riêng, chạy thực nghiệm 2 ảnh, lưu kết quả và báo cáo.
 
-[TESTING] — [ĐANG KIỂM THỬ / REVIEW]:
+---
 
-Phần việc đã hoàn thành code hoặc nội dung thô, đang trong quá trình chạy thử nghiệm, kiểm tra lỗi hoặc các thành viên trong nhóm đang đọc góp ý lại.
+### 👤 Thành viên 4: Duy (OpenCV Canny - II.1 & II.2)
+- [DONE] **II.1 - Canny OpenCV Baseline & Ứng dụng Thực tế**:
+  - Đọc ảnh xám, tiền xử lý mờ Gaussian (`cv2.GaussianBlur`).
+  - Phân đoạn đường biên bằng Contour & vẽ Bounding Box (`cv2.findContours`, `cv2.boundingRect`).
+  - Nhận dạng hình học bằng phép biến đổi Hough Lines (`cv2.HoughLinesP`) & Hough Circles (`cv2.HoughCircles`).
+- [DONE] **II.2.1 - Khảo sát Biến đổi Sigma (Làm mờ Gaussian)**:
+  - Thử nghiệm 3 mức `sigma = 1, 2, 5`.
+  - **Đánh giá định lượng**: Đếm chính xác số pixel cạnh bằng `np.count_nonzero()`.
+- [DONE] **II.2.2 - Khảo sát Bộ Ngưỡng Kép (Threshold Low / High)**:
+  - Thử nghiệm 3 bộ ngưỡng: `50-150` (Thấp/Nhạy), `100-200` (Mặc định/Cân bằng), `150-300` (Cao/Lọc mạnh).
+  - **Đánh giá định lượng**: Đếm số pixel cạnh `np.count_nonzero()` tương ứng.
+- [DONE] **II.2.3 - Trực quan hóa & So sánh Kết quả**:
+  - Hiển thị lưới 2x3 cho khảo sát tham số (Sigma & Thresholds).
+  - Hiển thị lưới 2x2 cho phần ứng dụng thực tế (Anh gốc, Canny, Contour, Hough).
 
-[DONE] — [ĐÃ HOÀN THÀNH]:
+---
 
-Công việc đã được kiểm tra kỹ lưỡng, chạy thành công, hình ảnh kết quả đã xuất đầy đủ và nội dung đã được chuẩn hóa để đưa vào báo cáo chính thức.
+## 2. Nhật ký Audit Kiểm thử (Audit Log)
 
-[BLOCKED] — [BỊ KẸT / GẶP LỖI]:
-
-Công việc đang bị tạm dừng do gặp lỗi kỹ thuật chưa giải quyết được (ví dụ: lỗi thư viện, xung đột code, thiếu dữ liệu) và cần sự hỗ trợ từ các thành viên khác hoặc nhóm trưởng.
-
-## Phước (Scikit‑image) - canny_skimage
-- [DONE] — Đã tạo thư mục riêng, chạy thực nghiệm 2 ảnh, lưu đầy đủ kết quả và báo cáo.
+| Audit ID | Người Audit | Nội dung kiểm thử | Cấu hình & Hàm thử nghiệm | Kết quả nghiệm thu & Thống kê | Trạng thái |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **AUDIT-01** | Duy (TV4) | Thống kê định lượng số pixel cạnh theo Sigma | `GaussianBlur(gray, (5,5), sigma)` với `sigma = 1, 2, 5` | Đếm thành công bằng `np.count_nonzero()`. Sigma càng lớn số pixel cạnh thu được càng giảm (do đường biên được làm mịn). | **PASS** |
+| **AUDIT-02** | Duy (TV4) | Thống kê định lượng số pixel cạnh theo Threshold | Bộ ngưỡng: `50-150`, `100-200`, `150-300` | Ngưỡng `50-150` cho số lượng pixel cạnh cao nhất (nhiều nét), `150-300` cho ít pixel nhất (lọc sạch nhiễu). | **PASS** |
+| **AUDIT-03** | Duy (TV4) | Hiển thị Lưới 2x3 So sánh Tham số | Matplotlib Subplots `(2, 3)` | Trực quan hóa rõ ràng sự khác biệt giữa 3 mức Sigma và 3 bộ ngưỡng Threshold. | **PASS** |
+| **AUDIT-04** | Duy (TV4) | Kiểm thử Phân đoạn Contour & Hough Transform | `cv2.findContours`, `cv2.HoughLinesP`, `cv2.HoughCircles` | Nhận dạng và vẽ thành công Bounding Box đường biên, đoạn thẳng Hough Lines và đường tròn Hough Circles. | **PASS** |
+| **AUDIT-05** | Duy (TV4) | Kiểm định mã nguồn `notebook/4.py` | Cấu trúc code trong `notebook/4.py` | Code ngắn gọn, phân chia rõ ràng giữa thống kê số liệu `np.count_nonzero()` và hiển thị đồ thị `plt.show()`. | **VERIFIED** |

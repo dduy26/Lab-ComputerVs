@@ -1,5 +1,57 @@
-Phân chia tiến độ công việc theo các giai đoạn (Lý thuyết, Bài tập thực hành, Câu hỏi mở rộng) và phân công nhiệm vụ cụ thể cho từng thành viên (ngày cập nhật, họ tên, phần phụ trách).
+# KẾ HOẠCH THỰC HIỆN - PHẦN II.1 & II.2 (OPENCV CANNY)
+**Thành viên thực hiện:** Duy (Thành viên 4)  
+**Tệp mã nguồn chính:** `notebook/4.py`  
 
-Phân chia 3 giai đoạn thực hiện 
-Giai đoạn 1: Nghiên cứu Lý thuyết (Lý thuyết Canny & Toán học Fourier)
-Mục tiêu: Nắm vững toàn bộ cơ sở lý thuyết của thuật toán và các nguyên lý nền tảng.Nội dung công việc:Tìm hiểu chi tiết 5 bước của thuật toán Canny: Giảm nhiễu (Gaussian), tính toán Gradient, Non-maximum suppression, Ngưỡng kép (Double Thresholding), và Theo dõi cạnh liên thông (Hysteresis).Khảo sát ảnh hưởng của các tham số ($\sigma$, ngưỡng thấp, ngưỡng cao).Nghiên cứu mối quan hệ giữa tần số và thời gian trong phép biến đổi Fourier. viết nội dung vào file tài liệu lý thuyết chính và cập nhật tiến độ vào 3.status.md. Giai đoạn 2: Bài tập thực hành (Coding & Thực nghiệm)Mục tiêu: Hiện thực hóa mã nguồn bằng Python và kiểm chứng trực quan kết quả.Nội dung công việc:Sử dụng thư viện OpenCV (cv2.Canny) và Scikit-image (skimage.feature.canny) để phát hiện cạnh.Thử nghiệm thay đổi các tham số (sigma, threshold1, threshold2) và quan sát sự thay đổi trên kết quả.Áp dụng Canny trên nhiều loại ảnh khác nhau (ảnh nhiễu, ảnh tương phản thấp, ảnh nhiều chi tiết).Kết hợp Canny với các kỹ thuật phân đoạn hoặc nhận dạng hình dáng.Phân công & Cập nhật: phụ trách viết code trong thư mục notebooks/, lưu kết quả hình ảnh xuất ra vào thư mục data/ và ghi chú kết quả kiểm thử.Giai đoạn 3: Câu hỏi mở rộng & Tổng hợp báo cáoMục tiêu: Giải quyết các bài toán nâng cao, đánh giá chất lượng và hoàn thiện hồ sơ nộp.Nội dung công việc:Trả lời câu hỏi mở rộng: Phương pháp đánh giá chất lượng cạnh, cách cải thiện hiệu suất Canny, áp dụng cho ảnh màu và video.Hoàn thiện toàn bộ các file báo cáo trong thư mục docs/ (1.Require.md, 2.plan.md, 3.status.md, 4.reference.md).Phân công & Cập nhật:tổng hợp toàn bộ báo cáo, kiểm tra định dạng Markdown, trích dẫn tài liệu tham khảo và chốt bản nộp cuối cùng.
+---
+
+## 1. Cấu trúc Luồng Xử lý trong `notebook/4.py`
+
+Kế hoạch được tối ưu bám sát mã nguồn mới của Duy, kết hợp giữa khảo sát tham số định tính/định lượng và ứng dụng phân đoạn / nhận dạng hình học.
+
+```mermaid
+flowchart TD
+    A[Đọc ảnh & Chuyển ảnh xám] --> B[Khảo sát Sigma Gaussian Blur]
+    A --> C[Khảo sát Bộ Ngưỡng Kép Threshold]
+    B --> D[Đếm điểm ảnh cạnh np.count_nonzero]
+    C --> D
+    D --> E[Trực quan hóa Lưới 2x3 So sánh Tham số]
+    E --> F[Ứng dụng Phân đoạn Contour & Hough Transform]
+    F --> G[Trực quan hóa Lưới 2x2 Kết quả Ứng dụng]
+```
+
+---
+
+## 2. Chi tiết các Bước Thực hiện
+
+### Bước 1: Khảo sát Tham số Sigma (Gaussian Blur trước Canny)
+- Làm mờ ảnh với bộ lọc Gaussian Kernel $(5\times 5)$ và các mức `sigma = 1, 2, 5`.
+- Trích xuất cạnh bằng `cv2.Canny(blur, 100, 200)`.
+- **Thống kê định lượng**: Sử dụng `np.count_nonzero()` để đếm chính xác số pixel cạnh thu được ở từng mức Sigma.
+
+### Bước 2: Khảo sát Bộ Ngưỡng Kép (Threshold Low / High)
+- Sử dụng ảnh đã làm mờ (`sigma = 2`), áp dụng `cv2.Canny` với 3 bộ ngưỡng:
+  - `50 - 150`: Ngưỡng thấp, nhạy cạnh, phát hiện nhiều nét chi tiết và nhiễu.
+  - `100 - 200`: Ngưỡng mặc định OpenCV, kết quả cân bằng.
+  - `150 - 300`: Ngưỡng cao, chỉ giữ cạnh mạnh, loại bỏ nhiễu và đứt chi tiết mảnh.
+- **Thống kê định lượng**: Đếm số lượng pixel cạnh `np.count_nonzero()` cho từng bộ ngưỡng.
+
+### Bước 3: Trực quan hóa So sánh Tham số (Lưới 2x3)
+- Sử dụng `matplotlib.pyplot` tạo lưới 2 hàng x 3 cột:
+  - Hàng 1: Đồ thị kết quả Canny theo `Sigma = 1`, `Sigma = 2`, `Sigma = 5`.
+  - Hàng 2: Đồ thị kết quả Canny theo các bộ ngưỡng `50-150`, `100-200`, `150-300`.
+
+### Bước 4: Mở rộng Ứng dụng Phân đoạn & Nhận dạng (Lưới 2x2)
+- **Phân đoạn Contour**:
+  - Dùng `cv2.findContours` tìm đường biên từ `canny_edges`.
+  - Lọc contour diện tích $> 50$ và vẽ Bounding Box màu đỏ (`cv2.boundingRect`).
+- **Nhận dạng Hough Transform**:
+  - Phát hiện đoạn thẳng bằng `cv2.HoughLinesP`.
+  - Phát hiện đường tròn bằng `cv2.HoughCircles`.
+- **Hiển thị Lưới 2x2**: Ảnh gốc, Ảnh cạnh Canny, Phân đoạn Contour, Nhận dạng Hough.
+
+---
+
+## 3. Thư viện & Công cụ Sử dụng
+- **`cv2`**: Chuyển màu, GaussianBlur, Canny, findContours, HoughLinesP, HoughCircles.
+- **`numpy`**: Đếm pixel nhị phân `np.count_nonzero()`, xử lý mảng.
+- **`matplotlib.pyplot`**: Trực quan hóa hình ảnh đa lưới (Subplots).
