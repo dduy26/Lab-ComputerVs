@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 # 1. Đọc ảnh và chuyển sang ảnh mức xám
 img = cv2.imread("anh1.jpg")
 if img is None:
+    img = cv2.imread("data/input/meme.jpg")
+if img is None:
     img = cv2.imread("../data/input/meme.jpg")
 
 gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -28,13 +30,13 @@ print(f"So diem anh canh (Pixel count): {count_default}\n")
 # ==============================================================================
 
 # ------------------------------------------------------------------------------
-# 1. Thay đổi Sigma (từ 1 đến 5 với bước nhảy nhỏ: 1, 2, 3, 4, 5)
+# 1. Thay đổi Sigma (từ 1.0 đến 5.0 với bước nhảy 0.5: 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0)
 # ------------------------------------------------------------------------------
-sigmas = [1, 2, 3, 4, 5]
+sigmas = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]
 edge_sigmas = []
 count_sigmas = []
 
-print("--- KHẢO SÁT SIGMA (1 -> 5 với bước nhảy nhỏ) ---")
+print("--- KHẢO SÁT SIGMA (1.0 -> 5.0 với bước nhảy 0.5) ---")
 for s in sigmas:
     blur = cv2.GaussianBlur(gray, (5, 5), s)
     edge = cv2.Canny(blur, 100, 200)
@@ -74,21 +76,21 @@ print()
 # TRỰC QUAN HÓA SO SÁNH KẾT QUẢ (CỦA DUY)
 # ==============================================================================
 
-# Biểu đồ 1: Khảo sát bước nhảy Sigma từ 1 đến 5 (So sánh với Mặc định)
-plt.figure(figsize=(15, 6))
+# Biểu đồ 1: Khảo sát bước nhảy Sigma từ 1.0 đến 5.0 (bước 0.5, so với Mặc định)
+plt.figure(figsize=(18, 7))
 
-plt.subplot(2, 3, 1)
+plt.subplot(2, 5, 1)
 plt.imshow(edge_default, cmap="gray")
 plt.title(f"Mac Dinh (No Blur)\n({count_default} px)")
 plt.axis("off")
 
 for idx, s in enumerate(sigmas):
-    plt.subplot(2, 3, idx + 2)
+    plt.subplot(2, 5, idx + 2)
     plt.imshow(edge_sigmas[idx], cmap="gray")
     plt.title(f"Sigma = {s}\n({count_sigmas[idx]} px)")
     plt.axis("off")
 
-plt.suptitle("KHAO SAT THAY DOI SIGMA (1 -> 5)", fontsize=14, fontweight="bold")
+plt.suptitle("KHAO SAT THAY DOI SIGMA (1.0 -> 5.0, buoc 0.5)", fontsize=14, fontweight="bold")
 plt.tight_layout()
 plt.show()
 
