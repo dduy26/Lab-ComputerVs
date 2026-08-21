@@ -22,3 +22,7 @@ Công việc đang bị tạm dừng do gặp lỗi kỹ thuật chưa giải qu
 
 ## Phước (Scikit‑image) - canny_skimage
 - [DONE] — Đã tạo thư mục riêng, chạy thực nghiệm 2 ảnh, lưu đầy đủ kết quả và báo cáo.
+
+## Thông — I.3(a+b+c) và III.3
+- [TESTING] — Đã hoàn thành bản lý thuyết, bảng so sánh Canny/Sobel/Laplacian, ứng dụng thực tế và cách xử lý ảnh màu tại `docs/thong-i3-iii3.md`.
+- [TODO] — Thành viên khác review nội dung, kiểm tra nguồn và merge vào báo cáo chung.
