@@ -1,28 +1,32 @@
-Theo dõi tiến độ hoàn thành, ghi nhận các phần đã xong, phần đang làm hoặc các lỗi đang gặp phải của nhóm.
+# TIẾN ĐỘ THỰC HIỆN & ROADMAP DỰ ÁN - LAB-2-P2
 
-[TODO] — [CHƯA BẮT ĐẦU]:
+Tài liệu cập nhật tiến độ công việc theo mô hình **Roadmap** cho tất cả 7 thành viên trong nhóm.
 
-Công việc đã được lên kế hoạch và phân công nhưng chưa có thành viên nào bắt đầu tiến hành.
+---
 
-[IN_PROGRESS] — [ĐANG THỰC HIỆN]:
+## 1. Roadmap Tiến độ 7 Thành viên
 
-Thành viên được phân công đang tiến hành viết code, nghiên cứu lý thuyết hoặc soạn thảo nội dung báo cáo.
+### 📖 Phần I & Phần III: Lý thuyết & Câu hỏi mở rộng
+- [DONE] **Thành viên 1: Đức** (I.1 a+b, III.1) $\rightarrow$ Lý thuyết 5 bước Canny, so sánh Sobel/Laplacian, phương pháp đánh giá chất lượng cạnh.
+- [DONE] **Thành viên 2: Thọ** (I.2 a+b, III.2) $\rightarrow$ Phân tích tham số Sigma, Ngưỡng Low/High, phương pháp nâng cao hiệu suất.
+- [DONE] **Thành viên 3: Thông** (I.3 a+b+c, III.3) $\rightarrow$ Ưu/nhược điểm Canny, lĩnh vực ứng dụng, Canny cho ảnh màu.
 
-[TESTING] — [ĐANG KIỂM THỬ / REVIEW]:
+---
 
-Phần việc đã hoàn thành code hoặc nội dung thô, đang trong quá trình chạy thử nghiệm, kiểm tra lỗi hoặc các thành viên trong nhóm đang đọc góp ý lại.
+### 💻 Phần II & III.4: Bài tập thực hành & Video
+- [DONE] **Thành viên 4: Duy** (**II.1 OpenCV & II.2 OpenCV**):
+  - Trích xuất cạnh Canny OpenCV mặc định baseline (`100, 200`).
+  - Khảo sát mờ Gaussian với `sigma = [1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0]` (bước nhảy 0.5), đếm pixel `np.count_nonzero()`.
+  - Khảo sát bộ ngưỡng Low/High `(30, 90)` đến `(200, 300)`.
+  - Trực quan hóa Lưới 2x5 so sánh đối chứng với Canny Mặc định OpenCV.
+  - *Tệp thực thi:* `notebook/4.py` (Phần II.1 & II.2).
 
-[DONE] — [ĐÃ HOÀN THÀNH]:
+- [DONE] **Thành viên 5: Phước** (II.1 & II.2 Scikit-image):
+  - Hoàn thành thực hành Canny bằng `skimage.feature.canny` trong thư mục `canny_skimage/`.
 
-Công việc đã được kiểm tra kỹ lưỡng, chạy thành công, hình ảnh kết quả đã xuất đầy đủ và nội dung đã được chuẩn hóa để đưa vào báo cáo chính thức.
+- [IN_PROGRESS] **Thành viên 6: Vinh** (II.3):
+  - Áp dụng Canny trên nhiều loại ảnh (ảnh nhiễu, ảnh độ tương phản thấp, ảnh nhiều chi tiết).
 
-[BLOCKED] — [BỊ KẸT / GẶP LỖI]:
-
-Công việc đang bị tạm dừng do gặp lỗi kỹ thuật chưa giải quyết được (ví dụ: lỗi thư viện, xung đột code, thiếu dữ liệu) và cần sự hỗ trợ từ các thành viên khác hoặc nhóm trưởng.
-
-## Phước (Scikit‑image) - canny_skimage
-- [DONE] — Đã tạo thư mục riêng, chạy thực nghiệm 2 ảnh, lưu đầy đủ kết quả và báo cáo.
-
-## Thông — I.3(a+b+c) và III.3
-- [TESTING] — Đã hoàn thành bản lý thuyết, bảng so sánh Canny/Sobel/Laplacian, ứng dụng thực tế và cách xử lý ảnh màu tại `docs/thong-i3-iii3.md`.
-- [TODO] — Thành viên khác review nội dung, kiểm tra nguồn và merge vào báo cáo chung.
+- [DONE] **Thành viên 7: Huy** (II.4 & III.4):
+  - Kết hợp Canny với Phân đoạn Contour & Nhận dạng Hough Transform trong `notebook/4.py` (Phần II.4).
+  - Trả lời câu hỏi mở rộng Canny cho Video trong `docs/Câu hỏi mở rộng`.
