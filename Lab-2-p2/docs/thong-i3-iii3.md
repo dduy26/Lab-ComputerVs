@@ -36,6 +36,12 @@
 | Điều chỉnh tham số | Ít | Ít | Nhiều hơn, khó chọn hơn |
 | Khi nên dùng | Cần gradient, hướng cạnh hoặc xử lý nhanh | Cần phát hiện biến đổi cường độ nhanh, ảnh ít nhiễu | Cần bản đồ cạnh sạch để contour/Hough/phân đoạn |
 
+**Minh họa trực quan trên cùng một ảnh gốc** (chạy với OpenCV, ảnh đầu vào `data/input/meme.jpg`):
+
+![So sánh Sobel - Laplacian - Canny trên cùng 1 ảnh](../data/output/thong_edge_comparison.png)
+
+*Hình: Kết quả phát hiện cạnh với 3 thuật toán trên cùng một ảnh gốc. Có thể quan sát rõ Canny cho cạnh mảnh, liên tục và ít nhiễu nhất; Laplacian nhiễu nhất; Sobel cho biên dày hơn.*
+
 ### Kết luận so sánh
 
 - Chọn **Sobel** khi ưu tiên tốc độ, cần gradient theo phương X/Y hoặc hướng cạnh.
