@@ -166,3 +166,53 @@ plt.show()
 1. **Thực thi không lỗi:** File `notebook/4.py` chạy thành công từ đầu đến cuối không phát sinh lỗi ngoại lệ (Exception).
 2. **Số liệu đầy đủ:** In ra màn hình terminal đầy đủ số lượng pixel `np.count_nonzero()` cho từng trường hợp khảo sát.
 3. **Trực quan rõ ràng:** Xuất ra 2 cửa sổ đồ họa hiển thị lưới Subplot 2x3 có chú thích đầy đủ tiêu đề và chỉ số pixel đối chứng.
+
+---
+
+## 📝 IV. CHI TIẾT KẾ HOẠCH & MÃ NGUỒN CẦN THỰC HIỆN CỦA VINH (THÀNH VIÊN 6 - PHẦN II.3)
+
+**Nhiệm vụ trọng tâm:** Áp dụng thuật toán Canny trên 3 loại ảnh khác nhau (Ảnh nhiễu, Tương phản thấp, Nhiều chi tiết), đồng thời tinh chỉnh tham số để đánh giá kết quả.
+
+---
+
+### 🚀 CÁC BƯỚC THỰC HIỆN VÀ CHI TIẾT CODE CẦN LÀM (TÍCH HỢP):
+
+#### 🔹 Bước 1: Tạo các loại ảnh khác nhau (Nhiễu, Tương phản thấp, Chi tiết)
+- **Mục tiêu:** Từ ảnh gốc (gray), dùng Numpy và OpenCV tạo ra 3 phiên bản ảnh đặc thù để thử nghiệm Canny.
+- **Code bổ sung:**
+```python
+# a) Ảnh có nhiều nhiễu
+noise = np.random.normal(0, 60, gray.shape).astype(np.float32)
+img_noisy = np.clip(cv2.add(gray.astype(np.float32), noise), 0, 255).astype(np.uint8)
+
+# b) Ảnh có độ tương phản thấp
+img_low_contrast = np.clip((gray.astype(np.float32) - 128) * 0.2 + 128, 0, 255).astype(np.uint8)
+
+# c) Ảnh có nhiều chi tiết (áp dụng bộ lọc làm sắc nét - sharpening)
+kernel_sharpening = np.array([[-1,-1,-1], 
+                              [-1, 9,-1],
+                              [-1,-1,-1]])
+img_detailed = cv2.filter2D(gray, -1, kernel_sharpening)
+```
+
+#### 🔹 Bước 2: Áp dụng Canny Edge Detector cho từng loại ảnh
+- **Mục tiêu:** Tinh chỉnh bộ lọc Gaussian Blur (kernel, sigma) và Ngưỡng Canny (Low/High) cho từng tình huống.
+- **Code bổ sung:**
+```python
+# 1. Canny cho ảnh nhiễu (Bắt buộc làm mờ mạnh bằng kernel 7x7, sigma lớn)
+blur_noisy = cv2.GaussianBlur(img_noisy, (7, 7), 2.5)
+edges_noisy = cv2.Canny(blur_noisy, 50, 150)
+
+# 2. Canny cho ảnh tương phản thấp (Hạ ngưỡng Canny xuống rất thấp: 15-40)
+blur_lc = cv2.GaussianBlur(img_low_contrast, (5, 5), 1.0)
+edges_low_contrast = cv2.Canny(blur_lc, 15, 40)
+
+# 3. Canny cho ảnh nhiều chi tiết (Tăng ngưỡng Canny lên cao: 150-250 để lọc chi tiết nhỏ)
+blur_det = cv2.GaussianBlur(img_detailed, (3, 3), 1.0)
+edges_detailed = cv2.Canny(blur_det, 150, 250)
+```
+
+#### 🔹 Bước 3: Đánh giá và Kết luận (Thêm vào phần hiển thị)
+- **Ảnh nhiễu:** Canny cực nhạy với nhiễu. Cần tăng `sigma` và `kernel` của bộ lọc Gaussian để tránh cạnh giả.
+- **Ảnh tương phản thấp:** Gradient yếu, Canny mặc định sẽ bị mù. Phải hạ Low/High Threshold xuống rất thấp.
+- **Ảnh nhiều chi tiết:** Sinh ra quá nhiều cạnh vụn vặt. Phải tăng High Threshold để lọc nhiễu dăm và giữ đường nét chính.

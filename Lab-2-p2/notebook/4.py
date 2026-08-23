@@ -113,6 +113,65 @@ plt.tight_layout()
 plt.show()
 
 # ##############################################################################
+# THÀNH VIÊN 6: VINH - PHẦN II.3 (CÁC LOẠI ẢNH KHÁC NHAU)
+# ##############################################################################
+
+# a) Ảnh có nhiều nhiễu (Noisy Gaussian)
+noise = np.random.normal(0, 60, gray.shape).astype(np.float32)
+img_noisy = np.clip(cv2.add(gray.astype(np.float32), noise), 0, 255).astype(np.uint8)
+blur_noisy = cv2.GaussianBlur(img_noisy, (7, 7), 2.5)
+edges_noisy = cv2.Canny(blur_noisy, 50, 150)
+
+# b) Ảnh có độ tương phản thấp (Low Contrast)
+img_low_contrast = np.clip((gray.astype(np.float32) - 128) * 0.2 + 128, 0, 255).astype(np.uint8)
+blur_lc = cv2.GaussianBlur(img_low_contrast, (5, 5), 1.0)
+edges_low_contrast = cv2.Canny(blur_lc, 15, 40)
+
+# c) Ảnh có nhiều chi tiết (Sharpened)
+kernel_sharpening = np.array([[-1,-1,-1], 
+                              [-1, 9,-1],
+                              [-1,-1,-1]])
+img_detailed = cv2.filter2D(gray, -1, kernel_sharpening)
+blur_det = cv2.GaussianBlur(img_detailed, (3, 3), 1.0)
+edges_detailed = cv2.Canny(blur_det, 150, 250)
+
+# Trực quan hóa kết quả của Vinh
+plt.figure(figsize=(15, 10))
+plt.subplot(3, 2, 1)
+plt.title("1a. Anh nhieu (Noisy Gaussian)")
+plt.imshow(img_noisy, cmap="gray")
+plt.axis("off")
+
+plt.subplot(3, 2, 2)
+plt.title("1b. Canny - Anh nhieu")
+plt.imshow(edges_noisy, cmap="gray")
+plt.axis("off")
+
+plt.subplot(3, 2, 3)
+plt.title("2a. Anh tuong phan thap (Low Contrast)")
+plt.imshow(img_low_contrast, cmap="gray", vmin=0, vmax=255)
+plt.axis("off")
+
+plt.subplot(3, 2, 4)
+plt.title("2b. Canny - Tuong phan thap")
+plt.imshow(edges_low_contrast, cmap="gray")
+plt.axis("off")
+
+plt.subplot(3, 2, 5)
+plt.title("3a. Anh nhieu chi tiet (Sharpened)")
+plt.imshow(img_detailed, cmap="gray")
+plt.axis("off")
+
+plt.subplot(3, 2, 6)
+plt.title("3b. Canny - Nhieu chi tiet")
+plt.imshow(edges_detailed, cmap="gray")
+plt.axis("off")
+
+plt.suptitle("THUC HANH II.3: CANNY TREN CAC LOAI ANH KHAC NHAU (VINH)", fontsize=14, fontweight="bold")
+plt.tight_layout()
+plt.show()
+
+# ##############################################################################
 # THÀNH VIÊN 7: HUY - PHẦN II.4 (KẾT HỢP CONTOUR & HOUGH TRANSFORM)
 # ##############################################################################
 
