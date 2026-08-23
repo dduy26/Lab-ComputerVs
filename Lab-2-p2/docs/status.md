@@ -26,7 +26,7 @@ Tài liệu cập nhật tiến độ công việc theo mô hình **Roadmap** ch
 
 - [DONE] **Thành viên 6: Vinh** (II.3):
   - Áp dụng Canny trên nhiều loại ảnh (ảnh nhiễu, ảnh độ tương phản thấp, ảnh nhiều chi tiết).
-  - *Tệp thực thi:* `notebook/6_vinh.py`
+  - *Tài liệu kế hoạch:* `docs/plan.md` (Phần IV)
 
 - [DONE] **Thành viên 7: Huy** (II.4 & III.4):
   - Kết hợp Canny với Phân đoạn Contour & Nhận dạng Hough Transform trong `notebook/4.py` (Phần II.4).
