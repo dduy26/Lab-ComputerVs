@@ -155,7 +155,7 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 - Đánh giá tốc độ và độ chính xác.
 
 ### Bước 2: Hiểu dữ liệu
-- Dữ liệu là các ảnh có sẵn trong thư mục `data/input/`.
+- Dữ liệu là các ảnh có sẵn trong thư mục `data/input/` (gồm similar và different).
 - Mỗi ảnh được chuyển về grayscale và resize 256×256.
 
 ### Bước 3: Xác định tính năng
@@ -179,8 +179,6 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 
 ### Bước 7: Kết luận
 - Tổng hợp kết quả, nhận xét về hiệu quả của wavelet hash trong tìm kiếm ảnh.
-2. **Xuất đủ kết quả:** In ra mã băm Hex 64-bit, Khoảng cách Hamming, và Đánh giá sự tương đồng.
-3. **Lưu file đầu ra:** Xuất hình ảnh trực quan hóa đầy đủ tại `data/output/wavelet_hash_visualization_cv2.png`.
 
 PHẦN III.1 
 Phần 1: Chuẩn bị dữ liệu thực nghiệm (5 phút)
