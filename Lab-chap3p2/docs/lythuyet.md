@@ -138,9 +138,9 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 
 ### 6. Đánh giá hiệu năng
 
-- **Tốc độ xây dựng database**: ~0.1 giây/ảnh (phụ thuộc kích thước ảnh).
-- **Tốc độ tìm kiếm**: O(N) với N là số ảnh trong database, thường dưới 0.01 giây cho vài trăm ảnh.
-- **Độ chính xác**: Với ngưỡng Hamming ≤ 10, phân loại đúng trên 95% cho các ảnh biến đổi nhẹ (dựa trên kết quả kiểm thử từ `verify_wavelet_hash.py`).
+- **Tốc độ xây dựng database**: ~0.08 giây cho 22 ảnh.
+- **Tốc độ tìm kiếm**: ~99 ms cho 22 ảnh.
+- **Độ chính xác**: Với ngưỡng Hamming ≤ 1 cho ảnh giống, >10 cho ảnh khác (dựa trên kết quả kiểm thử).
 
 PHẦN III.1 Thực hiện khảo sát về các phương pháp băm wavelet khác nhau và so sánh hiệu suất của chúng.
 1. Khái niệm Biến đổi Wavelet (Discrete Wavelet Transform - DWT)
