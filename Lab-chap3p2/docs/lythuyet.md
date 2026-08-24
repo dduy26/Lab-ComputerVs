@@ -127,18 +127,17 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 ▼
 [Top K ảnh giống nhất]
 
-### 5. Các hàm chính trong `code.py`
+
+### 5. Các hàm chính trong `search_app.py`
 
 | Hàm | Chức năng |
 | :--- | :--- |
 | `build_database(image_dir, db_path)` | Duyệt thư mục, tính wHash cho mỗi ảnh, lưu vào JSON. |
-| `search(query_path, db_path, top_k=5)` | Tìm kiếm ảnh tương tự, trả về danh sách (đường dẫn, khoảng cách). |
-| `cli()` | Giao diện dòng lệnh đơn giản: `--build`, `--query`, `--top-k`, `--db`. |
+| `search(query_path, db_path, top_k)` | Tìm kiếm ảnh tương tự, trả về danh sách (đường dẫn, khoảng cách, độ tương đồng). |
+| `cli()` | Giao diện dòng lệnh với argparse. |
 
 ### 6. Đánh giá hiệu năng
 
 - **Tốc độ xây dựng database**: ~0.1 giây/ảnh (phụ thuộc kích thước ảnh).
 - **Tốc độ tìm kiếm**: O(N) với N là số ảnh trong database, thường dưới 0.01 giây cho vài trăm ảnh.
-- **Độ chính xác**: Với ngưỡng Hamming ≤ 10, phân loại đúng trên 95% cho các ảnh biến đổi nhẹ.
-
----
+- **Độ chính xác**: Với ngưỡng Hamming ≤ 10, phân loại đúng trên 95% cho các ảnh biến đổi nhẹ (dựa trên kết quả kiểm thử từ `verify_wavelet_hash.py`).
