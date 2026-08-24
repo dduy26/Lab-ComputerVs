@@ -5,15 +5,14 @@ import pywt
 import matplotlib.pyplot as plt
 from PIL import Image
 
-# Xác định thư mục gốc của phân đoạn bài tập (Lab-chap3p2)
+# Xác định thư mục gốc của bài tập (Lab-chap3p2) tính từ tệp notebook/code.py
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(SCRIPT_DIR)
 
 def resolve_path(image_path):
     """
     Tự động giải quyết đường dẫn ảnh thông minh:
-    Nếu đường dẫn truyền vào chưa tuyệt đối và không tồn tại theo CWD hiện tại,
-    sẽ tìm kiếm đường dẫn tương đối tính từ BASE_DIR (Lab-chap3p2).
+    Hỗ trợ cả đường dẫn tuyệt đối lẫn đường dẫn tương đối tính từ BASE_DIR (Lab-chap3p2).
     """
     if os.path.isabs(image_path) and os.path.exists(image_path):
         return image_path
@@ -28,73 +27,66 @@ def resolve_path(image_path):
 
 def preprocess_image_cv2(image_path, target_size=(256, 256)):
     """
-    Tiền xử lý ảnh sử dụng thư viện OpenCV:
-    1. Đọc ảnh từ file (Hỗ trợ đường dẫn Unicode tiếng Việt).
-    2. Chuyển đổi sang mức xám (Grayscale) nếu là ảnh màu.
-    3. Chuẩn hóa kích thước (Resize) về target_size.
+    1. Đọc ảnh bằng OpenCV (Hỗ trợ đường dẫn tiếng Việt Unicode trên Windows qua np.fromfile + cv2.imdecode).
+    2. Chuyển đổi sang ảnh mức xám (Grayscale) nếu là ảnh màu (cv2.cvtColor).
+    3. Chuẩn hóa kích thước (Resize) về target_size (cv2.resize).
     """
     full_path = resolve_path(image_path)
     
-    # Sử dụng np.fromfile và cv2.imdecode để tránh lỗi Unicode path trên Windows (ví dụ: 'Xử lí ảnh')
+    # Đọc ảnh an toàn với đường dẫn tiếng Việt
     img_array = np.fromfile(full_path, dtype=np.uint8)
     img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
     
     if img is None:
         raise ValueError(f"Không thể đọc ảnh từ đường dẫn: {full_path}")
         
-    # Chuyển sang ảnh mức xám nếu là ảnh màu (3 kênh BGR)
+    # Chuyển sang mức xám nếu là ảnh màu BGR
     if len(img.shape) == 3 and img.shape[2] == 3:
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     else:
         gray = img
         
-    # Resize ảnh về kích thước cố định để chuẩn hóa
+    # Chuẩn hóa kích thước cố định
     resized = cv2.resize(gray, target_size, interpolation=cv2.INTER_AREA)
     return resized
 
 def preprocess_image_pil(image_path, target_size=(256, 256)):
     """
-    Tiền xử lý ảnh sử dụng thư viện PIL (Pillow):
-    1. Đọc ảnh từ file.
-    2. Chuyển đổi sang mức xám (Grayscale).
-    3. Chuẩn hóa kích thước (Resize) về target_size.
+    1. Đọc ảnh bằng thư viện PIL (Image.open).
+    2. Chuyển sang mức xám (img.convert('L')).
+    3. Chuẩn hóa kích thước (img.resize).
     """
     full_path = resolve_path(image_path)
     img = Image.open(full_path)
-    # Chuyển sang mức xám ('L' mode)
     gray = img.convert('L')
-    # Resize ảnh về kích thước cố định
     resized = gray.resize(target_size, Image.Resampling.LANCZOS)
     return np.array(resized)
 
 def wavelet_hash(img_array, wavelet='haar', level=3, hash_size=8):
     """
-    Tính mã băm Wavelet (wHash / Wavelet Hash) cho mảng ảnh xám:
-    - Bước 1: Biến đổi Wavelet 2D nhiều cấp (pywt.wavedec2).
+    Thuật toán Băm hình ảnh dựa trên Wavelet (Wavelet Hash / wHash):
+    - Bước 1: Khử nhiễu & phân tách tần số 2D Wavelet DWT (pywt.wavedec2).
     - Bước 2: Trích xuất băng tần tần số thấp LL (Approximation).
-    - Bước 3: Lượng tử hóa các hệ số bằng giá trị Trung vị (Median).
-    - Bước 4: Tạo mã băm nhị phân (Binary Hash) và chuỗi Hex.
+    - Bước 3: Lượng tử hóa các hệ số bằng giá trị Trung vị (np.median).
+    - Bước 4: Tạo mã băm nhị phân (Binary Hash) và chuỗi Hexadecimal.
     """
-    # Bước 1: Biến đổi Wavelet 2D
+    # Bước 1: Biến đổi 2D Wavelet DWT (Phân tách tần số)
     coeffs = pywt.wavedec2(img_array, wavelet=wavelet, level=level)
     
-    # Băng tần LL (Low-Low frequency approximation) nằm ở vị trí đầu tiên
+    # Băng tần LL (Low-Low) chứa năng lượng & cấu trúc hình học chính
     ll_coeffs = coeffs[0]
     
-    # Crop hoặc resize ma trận LL về kích thước hash_size x hash_size (vd: 8x8 = 64 bits)
+    # Resize ma trận LL về kích thước hash_size x hash_size (8x8 = 64 bits)
     ll_resized = cv2.resize(ll_coeffs, (hash_size, hash_size), interpolation=cv2.INTER_AREA)
     
-    # Bước 2: Lượng tử hóa hệ số (Quantization)
-    # Tính giá trị trung vị (Median) của băng tần LL
+    # Bước 2: Lượng tử hóa hệ số (Quantization) bằng Trung vị (Median)
     median_val = np.median(ll_resized)
-    
-    # Lượng tử hóa: 1 nếu hệ số >= median, ngược lại 0
     quantized_matrix = (ll_resized >= median_val).astype(int)
     
     # Bước 3: Tạo mã băm nhị phân (Binary hash vector)
     binary_hash = quantized_matrix.flatten()
     
-    # Chuyển mã nhị phân thành chuỗi Hexadecimal để dễ lưu trữ
+    # Chuyển mã nhị phân thành chuỗi Hexadecimal
     hex_hash = ""
     for i in range(0, len(binary_hash), 4):
         chunk = binary_hash[i:i+4]
@@ -111,26 +103,20 @@ def wavelet_hash(img_array, wavelet='haar', level=3, hash_size=8):
 
 def hamming_distance(hash1, hash2):
     """
-    Tính Khoảng cách Hamming giữa 2 mã băm nhị phân:
-    Đếm số lượng bit khác biệt giữa 2 chuỗi băm.
+    Tính Khoảng cách Hamming giữa 2 mã băm nhị phân (np.count_nonzero(b1 != b2)).
     """
     b1 = hash1["binary_hash"]
     b2 = hash2["binary_hash"]
     if len(b1) != len(b2):
         raise ValueError("Hai mã băm phải có cùng độ dài bit!")
         
-    # Tính số bit khác nhau (XOR)
     diff_bits = np.count_nonzero(b1 != b2)
     similarity_pct = (1.0 - diff_bits / len(b1)) * 100.0
     return diff_bits, similarity_pct
 
 def visualize_wavelet_hash(image_path, lib_type="cv2"):
     """
-    Trực quan hóa toàn bộ quy trình Hash Wavelet của một ảnh:
-    - Ảnh gốc / Ảnh xám
-    - Biến đổi Wavelet 2D Cấp 1 (LL, LH, HL, HH)
-    - Băng tần LL sau biến đổi
-    - Ma trận nhị phân lượng tử hóa
+    Trực quan hóa quy trình Wavelet Hash và lưu đồ thị vào data/output/.
     """
     if lib_type == "cv2":
         img_gray = preprocess_image_cv2(image_path, target_size=(256, 256))
@@ -139,7 +125,7 @@ def visualize_wavelet_hash(image_path, lib_type="cv2"):
         
     hash_result = wavelet_hash(img_gray, wavelet='haar', level=3, hash_size=8)
     
-    # Biến đổi DWT level 1 để trực quan hóa 4 băng tần LL, LH, HL, HH
+    # Biến đổi DWT 2D level 1 (pywt.dwt2) để vẽ 4 băng tần LL, LH, HL, HH
     coeffs_lvl1 = pywt.dwt2(img_gray, 'haar')
     LL, (LH, HL, HH) = coeffs_lvl1
     
@@ -180,7 +166,7 @@ def visualize_wavelet_hash(image_path, lib_type="cv2"):
     plt.close()
 
 # ==============================================================================
-# CHƯƠNG TRÌNH CHÍNH (MAIN FUNCTION)
+# CHƯƠNG TRÌNH THỰC THI (MAIN EXECUTION)
 # ==============================================================================
 if __name__ == "__main__":
     import sys
@@ -188,22 +174,22 @@ if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     
     print("=" * 70)
-    print("THỰC HÀNH BĂM HÌNH ẢNH WAVELET (WAVELET HASHING) - BÀI THỰC HÀNH 4")
+    print("THỰC HÀNH BĂM HÌNH ẢNH WAVELET (WAVELET HASHING) - NOTEBOOK/CODE.PY")
     print("=" * 70)
     
     img1_path = os.path.join(BASE_DIR, "data", "input", "meme.jpg")
     img2_path = os.path.join(BASE_DIR, "data", "input", "memetest.jpg")
     
-    # 1. Thực nghiệm đọc ảnh bằng OpenCV và PIL
-    print("\n[1] XỬ LÝ ẢNH ĐẦU VÀO BẰNG OPENCV...")
+    # 1. Tiền xử lý bằng OpenCV và PIL
+    print("\n[1] XỬ LÝ ẢNH ĐẦU VÀO BẰNG OPENCV (preprocess_image_cv2)...")
     gray_cv2_1 = preprocess_image_cv2(img1_path, target_size=(256, 256))
     gray_cv2_2 = preprocess_image_cv2(img2_path, target_size=(256, 256))
     
-    print("[2] XỬ LÝ ẢNH ĐẦU VÀO BẰNG PIL (PILLOW)...")
+    print("[2] XỬ LÝ ẢNH ĐẦU VÀO BẰNG PIL (preprocess_image_pil)...")
     gray_pil_1 = preprocess_image_pil(img1_path, target_size=(256, 256))
     gray_pil_2 = preprocess_image_pil(img2_path, target_size=(256, 256))
     
-    # 2. Tính mã băm Wavelet Hash
+    # 2. Biến đổi Wavelet & Tính mã băm (wavelet_hash)
     hash1_cv = wavelet_hash(gray_cv2_1, wavelet='haar', level=3, hash_size=8)
     hash2_cv = wavelet_hash(gray_cv2_2, wavelet='haar', level=3, hash_size=8)
     
@@ -218,7 +204,7 @@ if __name__ == "__main__":
     print(f"Ảnh 1 (meme.jpg) [PIL]:    {hash1_pil['hex_hash']}")
     print(f"Ảnh 2 (memetest.jpg) [PIL]:    {hash2_pil['hex_hash']}")
     
-    # 3. So sánh khoảng cách Hamming
+    # 3. So sánh khoảng cách Hamming (hamming_distance)
     dist_cv, sim_cv = hamming_distance(hash1_cv, hash2_cv)
     dist_pil, sim_pil = hamming_distance(hash1_pil, hash2_pil)
     
@@ -233,7 +219,6 @@ if __name__ == "__main__":
     else:
         print("=> ĐÁNH GIÁ: Hai hình ảnh KHÁC NHAU!")
         
-    print("\n[3] TRỰC QUAN HÓA TOÀN BỘ BẰNG BIỂU ĐỒ...")
-    
+    print("\n[3] TRỰC QUAN HÓA TOÀN BỘ BẰNG BIỂU ĐỒ (visualize_wavelet_hash)...")
     visualize_wavelet_hash(img1_path, lib_type="cv2")
 
