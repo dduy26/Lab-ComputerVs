@@ -146,10 +146,10 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 
 ---
 
-## 📌 PHẦN III.2. Xây dựng ứng dụng tìm kiếm
+## 📌 PHẦN III. 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet.
 
 ### Bước 1: Phân tích yêu cầu
-- Cần CLI hoặc web app để tìm kiếm ảnh bằng wavelet hash.
+- Cần CLI để tìm kiếm ảnh bằng wavelet hash.
 - Xây dựng database lưu hash của các ảnh trong thư mục.
 - Cho phép truy vấn ảnh và trả về top‑K ảnh giống nhất.
 - Đánh giá tốc độ và độ chính xác.
@@ -169,17 +169,15 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 - **So sánh**: `hamming_distance()`.
 
 ### Bước 5: Hiện thực hóa
-- Thêm các hàm `build_database()`, `search()`, `cli()` vào `code.py`.
+- Tạo file `notebook/search_app.py` với các hàm `build_database()`, `search()`, `cli()`.
 - Sử dụng `os.walk()` để duyệt thư mục.
 - Lưu database dạng JSON: `{"path": "hex_hash"}`.
 
 ### Bước 6: Kiểm thử & Đánh giá
-- **Đánh giá mô hình**: Kiểm tra khoảng cách Hamming giữa các cặp giống/khác.
+- **Đánh giá mô hình**: Kiểm tra khoảng cách Hamming giữa các cặp giống/khác (đã có trong `verify_wavelet_hash.py`).
 - **Đánh giá toàn luồng**: Đo thời gian build DB và tìm kiếm; kiểm tra top K có đúng không.
 
 ### Bước 7: Kết luận
 - Tổng hợp kết quả, nhận xét về hiệu quả của wavelet hash trong tìm kiếm ảnh.
-## 📊 KẾT QUẢ VẬN HÀNH DỰ KIẾN (ACCEPTANCE CRITERIA)
-1. **Chạy không lỗi:** Chạy `python code.py` thực thi 100% không phát sinh lỗi ngoại lệ `FileNotFoundError` hay `UnicodeEncodeError`.
 2. **Xuất đủ kết quả:** In ra mã băm Hex 64-bit, Khoảng cách Hamming, và Đánh giá sự tương đồng.
 3. **Lưu file đầu ra:** Xuất hình ảnh trực quan hóa đầy đủ tại `data/output/wavelet_hash_visualization_cv2.png`.
