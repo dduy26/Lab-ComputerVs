@@ -49,3 +49,28 @@ Theo dõi tiến độ hoàn thành và cập nhật trạng thái chi tiết ch
 - [DONE] **Kết luận** – Ghi nhận kết quả trong báo cáo.
 
 **Trạng thái tổng thể:** ✅ Hoàn thành.
+
+III.1 Thực hiện khảo sát về các phương pháp băm wavelet khác nhau và so sánh hiệu suất của chúng.
+ BƯỚC 1: Chuẩn bị môi trường & Code
+
+Trạng thái: Hoàn thành 100%
+
+Chi tiết: Đã cài xong thư viện, tạo file run.py và tối ưu code chuẩn sinh viên.
+
+ BƯỚC 2: Chuẩn bị dữ liệu ảnh (CẦN LÀM NGAY)
+
+Trạng thái: Đang chờ bạn thực hiện
+
+Chi tiết: Copy 4–6 ảnh thật dán vào thư mục data trên máy tính.
+
+ BƯỚC 3: Chạy thực nghiệm & Chụp kết quả
+
+Trạng thái: Chưa bắt đầu
+
+Chi tiết: Gõ python run.py ở Terminal để lấy bảng số liệu Accuracy, Time, Discrimination.
+
+ BƯỚC 4: Tổng hợp Báo cáo (Word / Slide)
+
+Trạng thái: Chưa bắt đầu
+
+Chi tiết: Ráp phần Cơ sở lý thuyết + Bảng kết quả + Nhận xét đánh giá vào file nộp bài.
