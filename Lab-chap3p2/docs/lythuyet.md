@@ -93,6 +93,7 @@ Sơ đồ quy trình tạo mã băm Wavelet bao gồm 3 bước cốt lõi:
 | `visualize_wavelet_hash()` | `matplotlib.pyplot` | Biến đổi DWT cấp 1 (`pywt.dwt2`), vẽ lưới biểu đồ 6 subplot và lưu ảnh tại `data/output/wavelet_hash_visualization_cv2.png`. |
 
 ---
+<div style="height: 40px;"></div>
 
 ## 📖 III. 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet.
 
