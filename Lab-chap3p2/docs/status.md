@@ -63,3 +63,32 @@ Theo dõi tiến độ hoàn thành và cập nhật trạng thái chi tiết ch
 - [DONE] **Tổng hợp báo cáo & Biện luận** – Lập bảng tổng hợp số liệu thực nghiệm và giải thích chi tiết kết quả vào tài liệu báo cáo `lythuyet.md`.
 
 **Trạng thái tổng thể:** ✅ Hoàn thành.
+
+---
+
+## 📌 ROADMAP TIẾN ĐỘ – PHẦN II.5: Đánh giá hiệu suất & Vẽ biểu đồ ROC
+> **Phụ trách:** Thành viên 3: Duy (random)
+
+- [DONE] **Xây dựng Kế hoạch hàm áp dụng (`docs/plan.md`)**:
+  - Xác định các bước và hàm sử dụng (`sklearn.metrics.confusion_matrix`, `roc_curve`, `auc`, `matplotlib.pyplot`).
+  - Viết ví dụ mô tả logic áp dụng hàm cho từng bước đánh giá chỉ số và vẽ biểu đồ.
+
+- [DONE] **Tính toán các chỉ số đánh giá cơ bản (`notebook/code.py`)**:
+  - Lập Ma trận Nhầm lẫn (Confusion Matrix): $TP, TN, FP, FN$.
+  - Tính Độ chính xác (Accuracy): $\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$.
+  - Tính Độ nhạy (Sensitivity / Recall): $\text{Sensitivity} = \frac{TP}{TP + FN}$.
+  - Tính Độ đặc hiệu (Specificity): $\text{Specificity} = \frac{TN}{TN + FP}$.
+
+- [DONE] **Vẽ đường cong ROC và tính diện tích AUC (`notebook/code.py`)**:
+  - Trích xuất `fpr`, `tpr`, `thresholds` bằng `sklearn.metrics.roc_curve()`.
+  - Tính diện tích $AUC$ bằng `sklearn.metrics.auc()`.
+  - Trực quan hóa và xuất biểu đồ ROC chất lượng cao bằng `matplotlib.pyplot` tại `data/output/roc_curve_evaluation.png`.
+
+- [DONE] **Soạn thảo báo cáo Lý thuyết & Đánh giá (`docs/lythuyet.md`)**:
+  - Định nghĩa toán học chi tiết cho Confusion Matrix, Accuracy, Sensitivity, Specificity.
+  - Giải thích bản chất đường cong ROC và ý nghĩa của chỉ số diện tích AUC.
+  - Hướng dẫn từng bước cách vẽ ROC bằng `sklearn.metrics` và `matplotlib`.
+  - Biện luận đánh giá hiệu suất của thuật toán Wavelet Hash dựa trên các chỉ số thực nghiệm.
+
+**Trạng thái tổng thể:** ✅ Hoàn thành 100%.
+

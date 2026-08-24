@@ -165,6 +165,144 @@ def visualize_wavelet_hash(image_path, lib_type="cv2"):
     print(f"[+] Da luu bieu do truc quan hoa tai: {out_file}")
     plt.close()
 
+def evaluate_performance_and_roc(hamming_threshold=10):
+    """
+    Phần II.5 (Thành viên 3: Duy - random):
+    - Đánh giá các chỉ số hiệu suất:
+      + Accuracy = (TP + TN) / (TP + TN + FP + FN)
+      + Sensitivity (Recall) = TP / (TP + FN)
+      + Specificity = TN / (TN + FP)
+    - Giải thích ý nghĩa AUC và vẽ đường cong ROC bằng sklearn.metrics.roc_curve và matplotlib.
+    - Lưu biểu đồ đồ họa tại data/output/roc_curve_evaluation.png.
+    """
+    from sklearn.metrics import confusion_matrix, roc_curve, auc
+
+    print("\n" + "=" * 70)
+    print("PHẦN II.5: ĐÁNH GIÁ HIỆU SUẤT VÀ VẼ ĐƯỜNG CONG ROC (EVALUATION & ROC CURVE)")
+    print("=" * 70)
+
+    # 1. Thu thập dữ liệu thực nghiệm (Cặp ảnh tương đồng vs Cặp ảnh khác biệt)
+    input_dir = os.path.join(BASE_DIR, "data", "input")
+    target_img_path = os.path.join(input_dir, "meme.jpg")
+    target_img = preprocess_image_cv2(target_img_path)
+    target_hash = wavelet_hash(target_img)
+
+    similar_dir = os.path.join(input_dir, "similar")
+    different_dir = os.path.join(input_dir, "different")
+
+    y_true = []      # 1: Tương đồng (Positive), 0: Khác biệt (Negative)
+    y_scores = []    # Điểm tương đồng Similarity Score = (1 - dist / 64.0)
+    y_preds = []     # Nhãn dự đoán nhị phân (dist <= hamming_threshold -> 1, nguoc lai -> 0)
+
+    # Tập Cặp Ảnh TƯƠNG ĐỒNG (Positive Pairs)
+    if os.path.exists(similar_dir):
+        for f in os.listdir(similar_dir):
+            if f.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+                img_p = os.path.join(similar_dir, f)
+                img = preprocess_image_cv2(img_p)
+                h = wavelet_hash(img)
+                dist, _ = hamming_distance(target_hash, h)
+                score = 1.0 - (dist / 64.0)
+                pred = 1 if dist <= hamming_threshold else 0
+                
+                y_true.append(1)
+                y_scores.append(score)
+                y_preds.append(pred)
+
+    # Thêm cặp memetest.jpg (tương đồng)
+    memetest_path = os.path.join(input_dir, "memetest.jpg")
+    if os.path.exists(memetest_path):
+        img_m = preprocess_image_cv2(memetest_path)
+        h_m = wavelet_hash(img_m)
+        dist_m, _ = hamming_distance(target_hash, h_m)
+        score_m = 1.0 - (dist_m / 64.0)
+        pred_m = 1 if dist_m <= hamming_threshold else 0
+        y_true.append(1)
+        y_scores.append(score_m)
+        y_preds.append(pred_m)
+
+    # Tập Cặp Ảnh KHÁC BIỆT (Negative Pairs)
+    diff_images = []
+    if os.path.exists(different_dir):
+        for f in os.listdir(different_dir):
+            if f.lower().endswith((".png", ".jpg", ".jpeg", ".webp")):
+                img_p = os.path.join(different_dir, f)
+                img = preprocess_image_cv2(img_p)
+                h = wavelet_hash(img)
+                diff_images.append(h)
+                
+                dist, _ = hamming_distance(target_hash, h)
+                score = 1.0 - (dist / 64.0)
+                pred = 1 if dist <= hamming_threshold else 0
+                
+                y_true.append(0)
+                y_scores.append(score)
+                y_preds.append(pred)
+
+    # Thêm các cặp so sánh giữa các ảnh khác biệt với nhau để làm phong phú dữ liệu âm tính
+    for i in range(len(diff_images)):
+        for j in range(i + 1, len(diff_images)):
+            dist_ij, _ = hamming_distance(diff_images[i], diff_images[j])
+            score_ij = 1.0 - (dist_ij / 64.0)
+            pred_ij = 1 if dist_ij <= hamming_threshold else 0
+            y_true.append(0)
+            y_scores.append(score_ij)
+            y_preds.append(pred_ij)
+
+    y_true = np.array(y_true)
+    y_scores = np.array(y_scores)
+    y_preds = np.array(y_preds)
+
+    # 2. Tính Ma trận Nhầm lẫn & Chỉ số đánh giá
+    cm = confusion_matrix(y_true, y_preds)
+    if cm.shape == (2, 2):
+        tn, fp, fn, tp = cm.ravel()
+    else:
+        tn = cm[0, 0] if len(cm) > 0 else 0
+        fp, fn, tp = 0, 0, 0
+
+    total = len(y_true)
+    accuracy = (tp + tn) / total if total > 0 else 0.0
+    sensitivity = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    specificity = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+
+    print(f"Tổng số cặp ảnh thực nghiệm : {total} cặp ({np.sum(y_true==1)} Tương đồng, {np.sum(y_true==0)} Khác biệt)")
+    print(f"Ngưỡng khoảng cách Hamming : <= {hamming_threshold} bits (Similarity Score >= {(1.0 - hamming_threshold/64.0)*100:.2f}%)")
+    print("-" * 50)
+    print("MA TRẬN NHẦM LẪN (CONFUSION MATRIX):")
+    print(f"  True Positive  (TP) : {tp:<4} | False Positive (FP) : {fp:<4}")
+    print(f"  False Negative (FN) : {fn:<4} | True Negative  (TN) : {tn:<4}")
+    print("-" * 50)
+    print(f"1. Độ chính xác (Accuracy)    : {accuracy * 100:.2f}%  ((TP + TN) / Tổng số)")
+    print(f"2. Độ nhạy (Sensitivity/Recall): {sensitivity * 100:.2f}%  (TP / (TP + FN))")
+    print(f"3. Độ đặc hiệu (Specificity)  : {specificity * 100:.2f}%  (TN / (TN + FP))")
+
+    # 3. Tính toán đường cong ROC và diện tích AUC bằng sklearn.metrics
+    fpr, tpr, thresholds = roc_curve(y_true, y_scores)
+    roc_auc = auc(fpr, tpr)
+    print(f"4. Diện tích dưới đường ROC (AUC): {roc_auc:.4f}")
+
+    # 4. Vẽ đường cong ROC bằng matplotlib
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='darkorange', lw=2.5, label=f'Đường cong ROC (AUC = {roc_auc:.4f})')
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Phân loại ngẫu nhiên (AUC = 0.5)')
+    
+    plt.xlim([-0.02, 1.02])
+    plt.ylim([-0.02, 1.05])
+    plt.xlabel('False Positive Rate (1 - Specificity)', fontsize=11, fontweight='bold')
+    plt.ylabel('True Positive Rate (Sensitivity / Recall)', fontsize=11, fontweight='bold')
+    plt.title('ĐƯỜNG CONG ROC VÀ ĐÁNH GIÁ HIỆU SUẤT WAVELET HASH (wHash)', fontsize=12, fontweight='bold')
+    plt.legend(loc="lower right", fontsize=11)
+    plt.grid(True, linestyle=':', alpha=0.6)
+
+    output_dir = os.path.join(BASE_DIR, "data", "output")
+    os.makedirs(output_dir, exist_ok=True)
+    roc_out_file = os.path.join(output_dir, "roc_curve_evaluation.png")
+    plt.savefig(roc_out_file, dpi=150)
+    print(f"[+] Đã xuất biểu đồ đường cong ROC thành công tại: {roc_out_file}")
+    plt.close()
+
+
 # ==============================================================================
 # CHƯƠNG TRÌNH THỰC THI (MAIN EXECUTION)
 # ==============================================================================
@@ -259,4 +397,10 @@ if __name__ == "__main__":
     print(f"| {'Cặp 1: Gốc vs memetest.jpg':<36} | {dist_cv:>2}/64 bit | {sim_cv:>6.2f}%     | {eval_pair1}")
     print(f"| {'Cặp 2: Gốc vs Làm mờ + Nhiễu':<36} | {dist_pair2:>2}/64 bit | {sim_pair2:>6.2f}%     | {eval_pair2}")
     print(f"| {'Cặp 3: Gốc vs Ảnh khác loại':<36} | {dist_pair3:>2}/64 bit | {sim_pair3:>6.2f}%     | {eval_pair3}")
+
+    # ==========================================================================
+    # [5] PHẦN II.5 (THÀNH VIÊN 3: DUY) - ĐÁNH GIÁ CÁC CHỈ SỐ & VẼ ĐƯỜNG CONG ROC
+    # ==========================================================================
+    evaluate_performance_and_roc()
+
 

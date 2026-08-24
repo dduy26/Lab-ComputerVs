@@ -147,6 +147,60 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 
 ---
 
+### 7️⃣ Bước 7 (Phần II.5): Đánh giá hiệu suất & Vẽ biểu đồ ROC (Performance Evaluation & ROC Curve)
+> **Phụ trách:** Thành viên 3: Duy 
+
+* **Mục tiêu 7.1: Đánh giá hiệu suất bằng các chỉ số Accuracy, Sensitivity (Recall), Specificity**
+  * *Mục đích:* Đo lường độ chính xác phân loại của thuật toán Wavelet Hash trên tập dữ liệu ảnh thử nghiệm (phân biệt các cặp ảnh Tương tự vs Khác biệt).
+  * *Chỉ số & Công thức:*
+    * **Độ chính xác (Accuracy):** $\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$
+    * **Độ nhạy (Sensitivity / Recall):** $\text{Sensitivity} = \frac{TP}{TP + FN}$
+    * **Độ đặc hiệu (Specificity):** $\text{Specificity} = \frac{TN}{TN + FP}$
+  * *Hàm sử dụng:* Dùng `sklearn.metrics.confusion_matrix()` lấy $TN, FP, FN, TP$ hoặc tự tính toán từ mảng nhãn `y_true` và nhãn dự đoán `y_pred`.
+  * *Ví dụ Code:*
+    ```python
+    from sklearn.metrics import confusion_matrix
+    
+    # y_true: nhãn thực tế (1: Tương đồng, 0: Khác biệt)
+    # y_pred: nhãn dự đoán theo ngưỡng Hamming (dist <= 10 -> 1, nguoc lai -> 0)
+    tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
+    
+    acc = (tp + tn) / (tp + tn + fp + fn)
+    sens = tp / (tp + fn) if (tp + fn) > 0 else 0.0
+    spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+    ```
+
+* **Mục tiêu 7.2: Giải thích ý nghĩa AUC & Hướng dẫn vẽ đường cong ROC bằng sklearn và matplotlib**
+  * *Mục đích & Ý nghĩa AUC:*
+    * Đường cong ROC biểu diễn mối quan hệ giữa True Positive Rate (Sensitivity) và False Positive Rate ($1 - \text{Specificity}$) ở các ngưỡng phân loại khác nhau.
+    * Diện tích AUC (Area Under Curve) đo lường năng lực phân biệt tổng thể: $AUC = 1.0$ thể hiện khả năng phân biệt hoàn hảo, $AUC = 0.5$ tương đương đoán ngẫu nhiên.
+  * *Hàm sử dụng:* `sklearn.metrics.roc_curve()` để tính `fpr`, `tpr`, `thresholds`; `sklearn.metrics.auc()` hoặc `roc_auc_score()` để tính diện tích AUC; `matplotlib.pyplot` (`plt.plot`, `plt.xlabel`, `plt.ylabel`, `plt.title`, `plt.savefig`) để xuất ảnh biểu đồ.
+  * *Ví dụ Code:*
+    ```python
+    from sklearn.metrics import roc_curve, auc
+    import matplotlib.pyplot as plt
+    
+    # y_scores: điểm độ tương đồng = (1.0 - dist / 64.0)
+    fpr, tpr, thresholds = roc_curve(y_true, y_scores)
+    roc_auc = auc(fpr, tpr)
+    
+    plt.figure(figsize=(8, 6))
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'Đường cong ROC (AUC = {roc_auc:.4f})')
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Ngẫu nhiên (AUC = 0.5)')
+    plt.xlabel('False Positive Rate (1 - Specificity)')
+    plt.ylabel('True Positive Rate (Sensitivity / Recall)')
+    plt.title('ĐƯỜNG CONG ROC VÀ ĐÁNH GIÁ HIỆU SUẤT WAVELET HASH')
+    plt.legend(loc="lower right")
+    plt.grid(True, alpha=0.3)
+    plt.savefig("data/output/roc_curve_evaluation.png", dpi=150)
+    plt.close()
+    ```
+
+* **Mục tiêu 7.3: Đánh giá hiệu suất tổng thể của thuật toán dựa trên các chỉ số**
+  * *Mục đích:* Tổng hợp kết quả đo đạc thực nghiệm từ tập ảnh `similar` và `different` để kết luận về tính bền vững và độ nhạy của wHash.
+
+---
+
 ## 📌 PHẦN III. 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet.
 
 ### Bước 1: Phân tích yêu cầu
