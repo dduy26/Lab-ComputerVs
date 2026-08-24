@@ -147,8 +147,39 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 
 ---
 
-## 📊 KẾT QUẢ VẬN HÀNH DỰ KIẾN (ACCEPTANCE CRITERIA)
-1. **Chạy không lỗi:** Chạy `python code.py` thực thi 100% không phát sinh lỗi ngoại lệ `FileNotFoundError` hay `UnicodeEncodeError`.
+## 📌 PHẦN III. 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet.
+
+### Bước 1: Phân tích yêu cầu
+- Cần CLI để tìm kiếm ảnh bằng wavelet hash.
+- Xây dựng database lưu hash của các ảnh trong thư mục.
+- Cho phép truy vấn ảnh và trả về top‑K ảnh giống nhất.
+- Đánh giá tốc độ và độ chính xác.
+
+### Bước 2: Hiểu dữ liệu
+- Dữ liệu là các ảnh có sẵn trong thư mục `data/input/`.
+- Mỗi ảnh được chuyển về grayscale và resize 256×256.
+
+### Bước 3: Xác định tính năng
+- `build-database`: Duyệt thư mục → tính hash → lưu JSON.
+- `search`: Nhận ảnh query → tính hash → so sánh với DB → in top K.
+- `evaluate`: Đo thời gian, kiểm tra độ chính xác với các ảnh đã biết nhãn.
+
+### Bước 4: Giải pháp kỹ thuật
+- **Logic**: Sử dụng `argparse` cho CLI; `json` để lưu database.
+- **AI / Xử lý ảnh**: Sử dụng `preprocess_image_cv2()` và `wavelet_hash()` đã có trong `code.py`.
+- **So sánh**: `hamming_distance()`.
+
+### Bước 5: Hiện thực hóa
+- Tạo file `notebook/search_app.py` với các hàm `build_database()`, `search()`, `cli()`.
+- Sử dụng `os.walk()` để duyệt thư mục.
+- Lưu database dạng JSON: `{"path": "hex_hash"}`.
+
+### Bước 6: Kiểm thử & Đánh giá
+- **Đánh giá mô hình**: Kiểm tra khoảng cách Hamming giữa các cặp giống/khác (đã có trong `verify_wavelet_hash.py`).
+- **Đánh giá toàn luồng**: Đo thời gian build DB và tìm kiếm; kiểm tra top K có đúng không.
+
+### Bước 7: Kết luận
+- Tổng hợp kết quả, nhận xét về hiệu quả của wavelet hash trong tìm kiếm ảnh.
 2. **Xuất đủ kết quả:** In ra mã băm Hex 64-bit, Khoảng cách Hamming, và Đánh giá sự tương đồng.
 3. **Lưu file đầu ra:** Xuất hình ảnh trực quan hóa đầy đủ tại `data/output/wavelet_hash_visualization_cv2.png`.
 4. **Biện luận trường hợp ngoại lệ (Edge Cases):** Phân tích và giải thích được nguyên nhân gây ra *hiện tượng bão hòa bit (Bit Saturation)* trên ảnh nền phẳng đơn sắc trong tài liệu báo cáo `lythuyet.md`.
