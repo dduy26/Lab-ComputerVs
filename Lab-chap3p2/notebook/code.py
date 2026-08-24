@@ -222,3 +222,41 @@ if __name__ == "__main__":
     print("\n[3] TRỰC QUAN HÓA TOÀN BỘ BẰNG BIỂU ĐỒ (visualize_wavelet_hash)...")
     visualize_wavelet_hash(img1_path, lib_type="cv2")
 
+# ==========================================================================
+    # [4] PHẦN THÊM MỚI: MỞ RỘNG ĐỦ 3 CẶP ẢNH ĐỂ LẤY SỐ LIỆU CHO BÁO CÁO
+    # ==========================================================================
+    print("\n" + "=" * 70)
+    print("[4] BẢNG TỔNG HỢP KẾT QUẢ THỰC NGHIỆM ĐỦ 3 CẶP ẢNH:")
+    print("=" * 70)
+
+
+    # 1. Tạo Cặp 2: Biến thể bị làm mờ Gaussian và thêm nhiễu hạt từ ảnh gốc
+    img_blurred = cv2.GaussianBlur(gray_cv2_1, (7, 7), 1.5)
+    noise = np.random.normal(0, 10, gray_cv2_1.shape).astype(np.uint8)
+    img_noisy = cv2.add(img_blurred, noise)
+    hash_noisy = wavelet_hash(img_noisy, wavelet='haar', level=3, hash_size=8)
+
+
+    # 2. Tạo Cặp 3: Ảnh đối chứng hoàn toàn khác (sử dụng mẫu gradient nhân tạo)
+    img_different = np.tile(np.linspace(0, 255, 256, dtype=np.uint8), (256, 1))
+    hash_diff = wavelet_hash(img_different, wavelet='haar', level=3, hash_size=8)
+
+
+    # 3. Tính khoảng cách Hamming cho 2 cặp mở rộng
+    dist_pair2, sim_pair2 = hamming_distance(hash1_cv, hash_noisy)
+    dist_pair3, sim_pair3 = hamming_distance(hash1_cv, hash_diff)
+
+
+    # 4. Đánh giá theo ngưỡng <= 10 bits
+    eval_pair1 = "TƯƠNG ĐỒNG (Match)" if dist_cv <= 10 else "KHÁC NHAU (Mismatch)"
+    eval_pair2 = "TƯƠNG ĐỒNG (Match)" if dist_pair2 <= 10 else "KHÁC NHAU (Mismatch)"
+    eval_pair3 = "TƯƠNG ĐỒNG (Match)" if dist_pair3 <= 10 else "KHÁC NHAU (Mismatch)"
+
+
+    # 5. In bảng tổng hợp số liệu
+    print(f"\n| {'Phép thử':<36} | {'Hamming':<10} | {'Tương đồng':<12} | {'Đánh giá'}")
+    print("| " + "-" * 36 + " | " + "-" * 10 + " | " + "-" * 12 + " | " + "-" * 22)
+    print(f"| {'Cặp 1: Gốc vs memetest.jpg':<36} | {dist_cv:>2}/64 bit | {sim_cv:>6.2f}%     | {eval_pair1}")
+    print(f"| {'Cặp 2: Gốc vs Làm mờ + Nhiễu':<36} | {dist_pair2:>2}/64 bit | {sim_pair2:>6.2f}%     | {eval_pair2}")
+    print(f"| {'Cặp 3: Gốc vs Ảnh khác loại':<36} | {dist_pair3:>2}/64 bit | {sim_pair3:>6.2f}%     | {eval_pair3}")
+

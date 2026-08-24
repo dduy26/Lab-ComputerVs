@@ -49,3 +49,17 @@ Theo dõi tiến độ hoàn thành và cập nhật trạng thái chi tiết ch
 - [DONE] **Kết luận** – Ghi nhận kết quả trong báo cáo.
 
 **Trạng thái tổng thể:** ✅ Hoàn thành.
+
+
+---
+## ROADMAP TIẾN ĐỘ – PHẦN II. Bài toán cụ thể: 3 & 4. Tạo mã băm Wavelet và So sánh hàm băm
+
+- [DONE] **Giải thích quá trình lượng tử hóa** – Trình bày bản chất lượng tử hóa hệ số Wavelet, phân tích phương pháp dùng thư viện `pywt.quantize` và phương pháp lượng tử hóa nhị phân tự viết.
+- [DONE] **Xác định ngưỡng lượng tử & Độ dài mã băm** – Phân tích các chiến lược chọn ngưỡng (Median, Mean, Fixed Threshold) và làm rõ mối quan hệ giữa kích thước ma trận $LL$ với độ dài chuỗi băm (64-bit).
+- [DONE] **Chuyển hệ số thành mã nhị phân** – Xây dựng quy trình ánh xạ ma trận hệ số sau lượng tử hóa thành vector nhị phân (bit 0/1) và gom nhóm thành chuỗi Hexadecimal.
+- [DONE] **Giải thích khoảng cách Hamming** – Trình bày bản chất phép đo khoảng cách Hamming và hiện thực hóa công thức tính toán `sum(bit1 != bit2)`.
+- [DONE] **Xác lập ngưỡng quyết định tương đồng** – Thiết lập tiêu chuẩn đánh giá độ tương đồng dựa trên tỉ lệ lỗi bit (ngưỡng $\le 10\%$ độ dài hash để xác định hai ảnh tương đồng).
+- [DONE] **Thực nghiệm minh họa trên các cặp ảnh** – Chạy thực nghiệm, thu thập mã băm và đo khoảng cách Hamming trên 3 cặp ảnh mẫu (Ảnh gốc vs Biến thể chỉnh sửa, vs Biến thể nhiễu/làm mờ, vs Ảnh khác loại).
+- [DONE] **Tổng hợp báo cáo & Biện luận** – Lập bảng tổng hợp số liệu thực nghiệm và giải thích chi tiết kết quả vào tài liệu báo cáo `lythuyet.md`.
+
+**Trạng thái tổng thể:** ✅ Hoàn thành.
