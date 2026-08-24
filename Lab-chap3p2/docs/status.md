@@ -38,13 +38,13 @@ Theo dõi tiến độ hoàn thành và cập nhật trạng thái chi tiết ch
 
 ---
 
-## 📌 ROADMAP TIẾN ĐỘ – PHẦN III. Bài tập nâng cao: 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet
+## 📌 ROADMAP TIẾN ĐỘ – PHẦN III. 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet.
 
 - [DONE] **Phân tích yêu cầu** – Đọc flow.md, xác định chức năng cần xây dựng.
 - [DONE] **Hiểu dữ liệu** – Xác định thư mục ảnh và định dạng.
 - [DONE] **Xác định tính năng** – Liệt kê các chức năng build‑db, search, evaluate.
 - [DONE] **Giải pháp kỹ thuật** – Chọn CLI, sử dụng JSON, tận dụng các hàm có sẵn.
-- [DONE] **Hiện thực hóa** – Viết code trong `code.py` (build_database, search, cli).
+- [DONE] **Hiện thực hóa** – Tạo file `notebook/search_app.py` hoàn chỉnh.
 - [DONE] **Kiểm thử & Đánh giá** – Chạy thử nghiệm, đo thời gian, kiểm tra top K.
 - [DONE] **Kết luận** – Ghi nhận kết quả trong báo cáo.
 
