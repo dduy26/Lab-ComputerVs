@@ -26,3 +26,16 @@ Theo dõi tiến độ hoàn thành các hạng mục công việc trong dự á
 ## 📊 TRẠNG THÁI CÁC NHÓM TRẠNG THÁI
 
 - **[DONE]**: Đã hoàn thành phần IV (Lý thuyết 3 bước & Code hoàn chỉnh Python OpenCV/PIL).
+
+---
+
+## 👤 PHÂN CÔNG THEO THÀNH VIÊN
+
+### Thành viên 1: Thông (Phần I + II.1 + II.2)
+- [DONE] **Phần I — Mục tiêu bài tập:** trình bày mục tiêu wavelet trích xuất thông tin, làm quen PyWavelets, đánh giá hàm băm wavelet.
+- [DONE] **Phần II.1 — Chuẩn bị dữ liệu:** tạo 22 ảnh (16 similar + 6 different), tổ chức thư mục `data/input/similar/` + `data/input/different/`, đặt tên chuẩn, đề xuất số lượng tối thiểu.
+- [DONE] **Phần II.2 — Trích xuất wavelet:** giải thích `pywt.wavedec2`, phân tích LL/LH/HL/HH, so sánh wavelet haar/db4/sym2 bằng số liệu thực tế.
+- *Tệp:* `docs/thong-I-II12.md`, `notebook/prepare_dataset.py`, `notebook/verify_wavelet_hash.py`.
+
+### Các thành viên khác
+- [TODO] Chờ phân công phần II.3 + II.4 (hash, Hamming, đánh giá) và phần III nâng cao.
