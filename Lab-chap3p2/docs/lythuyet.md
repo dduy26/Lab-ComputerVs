@@ -107,6 +107,7 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 - **Cơ sở dữ liệu & Truy vấn**: Lưu trữ các mã băm dưới dạng JSON, so sánh bằng khoảng cách Hamming, trả về top‑K ảnh giống nhất.
 
 ### 3. Quy trình xây dựng database
+```
 [Thư mục ảnh]
 │
 ▼ (duyệt từng file)
@@ -114,8 +115,10 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 │
 ▼ (lưu dict)
 [File JSON: { "path": "hash_hex" }]
+```
 
 ### 4. Quy trình tìm kiếm
+```
 [Ảnh truy vấn]
 │
 ▼ (tính hash)
@@ -126,7 +129,7 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 │
 ▼
 [Top K ảnh giống nhất]
-
+```
 
 ### 5. Các hàm chính trong `search_app.py`
 
