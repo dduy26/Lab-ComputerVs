@@ -234,4 +234,6 @@ if __name__ == "__main__":
         print("=> ĐÁNH GIÁ: Hai hình ảnh KHÁC NHAU!")
         
     print("\n[3] TRỰC QUAN HÓA TOÀN BỘ BẰNG BIỂU ĐỒ...")
+    
     visualize_wavelet_hash(img1_path, lib_type="cv2")
+
