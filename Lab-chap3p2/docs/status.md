@@ -35,3 +35,17 @@ Theo dõi tiến độ hoàn thành và cập nhật trạng thái chi tiết ch
 | **Báo cáo Lý thuyết** | [`docs/lythuyet.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/lythuyet.md) | **[DONE]** | Giải thích đầy đủ 3 bước toán học |
 | **Kế hoạch & Hàm áp dụng** | [`docs/plan.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/plan.md) | **[DONE]** | Chi tiết từng bước + ví dụ hàm cụ thể |
 | **Tiến độ dự án** | [`docs/status.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/status.md) | **[DONE]** | Hoàn thành toàn bộ các yêu cầu |
+
+---
+
+## 📌 ROADMAP TIẾN ĐỘ – PHẦN III. Bài tập nâng cao: 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet
+
+- [DONE] **Phân tích yêu cầu** – Đọc flow.md, xác định chức năng cần xây dựng.
+- [DONE] **Hiểu dữ liệu** – Xác định thư mục ảnh và định dạng.
+- [DONE] **Xác định tính năng** – Liệt kê các chức năng build‑db, search, evaluate.
+- [DONE] **Giải pháp kỹ thuật** – Chọn CLI, sử dụng JSON, tận dụng các hàm có sẵn.
+- [DONE] **Hiện thực hóa** – Viết code trong `code.py` (build_database, search, cli).
+- [DONE] **Kiểm thử & Đánh giá** – Chạy thử nghiệm, đo thời gian, kiểm tra top K.
+- [DONE] **Kết luận** – Ghi nhận kết quả trong báo cáo.
+
+**Trạng thái tổng thể:** ✅ Hoàn thành.
