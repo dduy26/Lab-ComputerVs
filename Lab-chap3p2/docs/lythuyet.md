@@ -141,3 +141,5 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 - **Tốc độ xây dựng database**: ~0.1 giây/ảnh (phụ thuộc kích thước ảnh).
 - **Tốc độ tìm kiếm**: O(N) với N là số ảnh trong database, thường dưới 0.01 giây cho vài trăm ảnh.
 - **Độ chính xác**: Với ngưỡng Hamming ≤ 10, phân loại đúng trên 95% cho các ảnh biến đổi nhẹ (dựa trên kết quả kiểm thử từ `verify_wavelet_hash.py`).
+
+PHẦN III.1 Thực hiện khảo sát về các phương pháp băm wavelet khác nhau và so sánh hiệu suất của chúng.
