@@ -1,41 +1,37 @@
-# TIẾN ĐỘ THỰC HIỆN & STATUS PROJECT - LAB-CHAP3P2
+# TIẾN ĐỘ THỰC HIỆN & STATUS DỰ ÁN - LAB-CHAP3P2
 
-Theo dõi tiến độ hoàn thành các hạng mục công việc trong dự án **Lab-chap3p2: So sánh sự tương đồng của các hình ảnh sử dụng Wavelet**.
-
----
-
-## 📌 DANH SÁCH TIẾN ĐỘ CÁC HẠNG MỤC
-
-### 📖 Phần IV: Tham khảo Wavelet Hash & Code Thực hành
-- [DONE] **Giải thích chi tiết 3 bước Wavelet Hash**:
-  - *Bước 1:* Biến đổi Wavelet 2D (phân tích tần số & không gian, trích xuất băng tần LL).
-  - *Bước 2:* Lượng tử hóa hệ số (giảm độ chính xác bằng giá trị Trung vị - Median).
-  - *Bước 3:* Tạo mã băm nhị phân & Hex, so sánh khoảng cách Hamming.
-  - *Tệp tài liệu:* [`docs/IV_Wavelet_Hash.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/IV_Wavelet_Hash.md)
-
-- [DONE] **Viết code hoàn chỉnh xử lý ảnh đầu vào**:
-  - Đọc ảnh bằng cả OpenCV (`cv2.imread`) và PIL (`Image.open`).
-  - Chuyển sang ảnh mức xám (Grayscale).
-  - Resize ảnh về kích thước chuẩn hóa ($256 \times 256$).
-  - Tính mã băm Wavelet 64-bit, tính khoảng cách Hamming và tỷ lệ tương đồng.
-  - Trực quan hóa 6 bước bằng Matplotlib và lưu kết quả vào `data/output/`.
-  - *Tệp thực thi:* [`notebook/wavelet_hash.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/notebook/wavelet_hash.py)
+Theo dõi tiến độ hoàn thành và cập nhật trạng thái chi tiết cho dự án **Lab-chap3p2: So sánh sự tương đồng của các hình ảnh sử dụng Wavelet Hash (wHash)**.
 
 ---
 
-## 📊 TRẠNG THÁI CÁC NHÓM TRẠNG THÁI
+## 📌 ROADMAP TIẾN ĐỘ VÀ CÁC FILE ĐÃ TẠO
 
-- **[DONE]**: Đã hoàn thành phần IV (Lý thuyết 3 bước & Code hoàn chỉnh Python OpenCV/PIL).
+### 📖 Phần IV: Băm Hình Ảnh Wavelet (Wavelet Hash)
+
+- [DONE] **Mã nguồn thực thi Python (`code.py`)**:
+  - Đã cài đặt hoàn chỉnh tệp mã nguồn [`notebook/code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/notebook/code.py).
+  - Đọc ảnh bằng cả OpenCV (`cv2.imread` / `cv2.imdecode` hỗ trợ tiếng Việt Unicode) và PIL (`Image.open`).
+  - Chuyển màu mức xám (Grayscale) và Resize chuẩn hóa kích thước cố định ($256 \times 256$).
+  - Khử nhiễu & Phân tách tần số Wavelet 2D (`pywt.wavedec2`), lượng tử hóa theo giá trị Trung vị (`np.median`), tạo mã băm nhị phân 64-bit và mã Hex.
+  - So sánh độ tương đồng bằng Khoảng cách Hamming (`np.count_nonzero(b1 != b2)`).
+  - Trực quan hóa 6 bước bằng Matplotlib và lưu kết quả tự động tại `data/output/wavelet_hash_visualization_cv2.png`.
+
+- [DONE] **Báo cáo Lý thuyết (`docs/lythuyet.md`)**:
+  - Đã soạn thảo đầy đủ tệp lý thuyết [`docs/lythuyet.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/lythuyet.md).
+  - Giải thích toán học và nguyên lý chi tiết 3 bước của Wavelet Hash (Phân tách Wavelet 2D $\rightarrow$ Lượng tử hóa Median $\rightarrow$ Tạo mã băm nhị phân & Khoảng cách Hamming).
+  - Bảng mô tả chi tiết tác dụng của từng hàm trong `code.py`.
+
+- [DONE] **Kế hoạch Thực hiện & Áp dụng Hàm (`docs/plan.md`)**:
+  - Đã soạn thảo tệp kế hoạch [`docs/plan.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/plan.md).
+  - Mô tả rõ cho từng bước: mục tiêu kỹ thuật, lý do áp dụng và **tên hàm cụ thể được dùng kèm ví dụ code minh họa** (ví dụ: Cần khử nhiễu & phân tách tần số thì dùng Wavelet `pywt.wavedec2()`, cần đọc ảnh an toàn tiếng Việt thì dùng `np.fromfile()` + `cv2.imdecode()`, cần lượng tử hóa dùng `np.median()`, v.v.).
 
 ---
 
-## 👤 PHÂN CÔNG THEO THÀNH VIÊN
+## 📊 TỔNG KẾT TRẠNG THÁI (STATUS)
 
-### Thành viên 1: Thông (Phần I + II.1 + II.2)
-- [DONE] **Phần I — Mục tiêu bài tập:** trình bày mục tiêu wavelet trích xuất thông tin, làm quen PyWavelets, đánh giá hàm băm wavelet.
-- [DONE] **Phần II.1 — Chuẩn bị dữ liệu:** tạo 22 ảnh (16 similar + 6 different), tổ chức thư mục `data/input/similar/` + `data/input/different/`, đặt tên chuẩn, đề xuất số lượng tối thiểu.
-- [DONE] **Phần II.2 — Trích xuất wavelet:** giải thích `pywt.wavedec2`, phân tích LL/LH/HL/HH, so sánh wavelet haar/db4/sym2 bằng số liệu thực tế.
-- *Tệp:* `docs/thong-I-II12.md`, `notebook/prepare_dataset.py`, `notebook/verify_wavelet_hash.py`.
-
-### Các thành viên khác
-- [TODO] Chờ phân công phần II.3 + II.4 (hash, Hamming, đánh giá) và phần III nâng cao.
+| Hạng mục | Tệp tương ứng | Trạng thái | Đánh giá |
+| :--- | :--- | :---: | :--- |
+| **Mã nguồn thực thi** | [`notebook/code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/notebook/code.py) | **[DONE]** | Chạy thành công 100%, không lỗi path/encoding |
+| **Báo cáo Lý thuyết** | [`docs/lythuyet.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/lythuyet.md) | **[DONE]** | Giải thích đầy đủ 3 bước toán học |
+| **Kế hoạch & Hàm áp dụng** | [`docs/plan.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/plan.md) | **[DONE]** | Chi tiết từng bước + ví dụ hàm cụ thể |
+| **Tiến độ dự án** | [`docs/status.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/status.md) | **[DONE]** | Hoàn thành toàn bộ các yêu cầu |
