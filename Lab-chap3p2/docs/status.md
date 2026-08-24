@@ -9,7 +9,7 @@ Theo dõi tiến độ hoàn thành và cập nhật trạng thái chi tiết ch
 ### 📖 Phần IV: Băm Hình Ảnh Wavelet (Wavelet Hash)
 
 - [DONE] **Mã nguồn thực thi Python (`code.py`)**:
-  - Đã cài đặt hoàn chỉnh tệp mã nguồn [`code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/code.py).
+  - Đã cài đặt hoàn chỉnh tệp mã nguồn [`notebook/code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/notebook/code.py).
   - Đọc ảnh bằng cả OpenCV (`cv2.imread` / `cv2.imdecode` hỗ trợ tiếng Việt Unicode) và PIL (`Image.open`).
   - Chuyển màu mức xám (Grayscale) và Resize chuẩn hóa kích thước cố định ($256 \times 256$).
   - Khử nhiễu & Phân tách tần số Wavelet 2D (`pywt.wavedec2`), lượng tử hóa theo giá trị Trung vị (`np.median`), tạo mã băm nhị phân 64-bit và mã Hex.
@@ -31,7 +31,7 @@ Theo dõi tiến độ hoàn thành và cập nhật trạng thái chi tiết ch
 
 | Hạng mục | Tệp tương ứng | Trạng thái | Đánh giá |
 | :--- | :--- | :---: | :--- |
-| **Mã nguồn thực thi** | [`code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/code.py) | **[DONE]** | Chạy thành công 100%, không lỗi path/encoding |
+| **Mã nguồn thực thi** | [`notebook/code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/notebook/code.py) | **[DONE]** | Chạy thành công 100%, không lỗi path/encoding |
 | **Báo cáo Lý thuyết** | [`docs/lythuyet.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/lythuyet.md) | **[DONE]** | Giải thích đầy đủ 3 bước toán học |
 | **Kế hoạch & Hàm áp dụng** | [`docs/plan.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/plan.md) | **[DONE]** | Chi tiết từng bước + ví dụ hàm cụ thể |
 | **Tiến độ dự án** | [`docs/status.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/status.md) | **[DONE]** | Hoàn thành toàn bộ các yêu cầu |

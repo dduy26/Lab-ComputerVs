@@ -2,7 +2,7 @@
 
 > **Dự án:** `Lab-chap3p2`  
 > **Chủ đề:** So sánh sự tương đồng của các hình ảnh sử dụng Wavelet Hash (wHash)  
-> **Tệp thực thi:** [`code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/code.py) | **Báo cáo lý thuyết:** [`docs/lythuyet.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/lythuyet.md)
+> **Tệp thực thi:** [`notebook/code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/notebook/code.py) | **Báo cáo lý thuyết:** [`docs/lythuyet.md`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/docs/lythuyet.md)
 
 ---
 

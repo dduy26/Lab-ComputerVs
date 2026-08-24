@@ -2,7 +2,7 @@
 
 > **Dự án:** `Lab-chap3p2`  
 > **Tên tệp báo cáo:** `docs/lythuyet.md`  
-> **Tệp mã nguồn đi kèm:** [`code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/code.py)
+> **Tệp mã nguồn đi kèm:** [`notebook/code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/notebook/code.py)
 
 ---
 

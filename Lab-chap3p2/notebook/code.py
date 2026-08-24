@@ -5,13 +5,14 @@ import pywt
 import matplotlib.pyplot as plt
 from PIL import Image
 
-# Xác định thư mục gốc của bài tập (Lab-chap3p2)
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# Xác định thư mục gốc của bài tập (Lab-chap3p2) tính từ tệp notebook/code.py
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(SCRIPT_DIR)
 
 def resolve_path(image_path):
     """
     Tự động giải quyết đường dẫn ảnh thông minh:
-    Hỗ trợ cả đường dẫn tuyệt đối lẫn đường dẫn tương đối tính từ BASE_DIR.
+    Hỗ trợ cả đường dẫn tuyệt đối lẫn đường dẫn tương đối tính từ BASE_DIR (Lab-chap3p2).
     """
     if os.path.isabs(image_path) and os.path.exists(image_path):
         return image_path
@@ -173,7 +174,7 @@ if __name__ == "__main__":
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
     
     print("=" * 70)
-    print("THỰC HÀNH BĂM HÌNH ẢNH WAVELET (WAVELET HASHING - wHash) - CODE.PY")
+    print("THỰC HÀNH BĂM HÌNH ẢNH WAVELET (WAVELET HASHING) - NOTEBOOK/CODE.PY")
     print("=" * 70)
     
     img1_path = os.path.join(BASE_DIR, "data", "input", "meme.jpg")
