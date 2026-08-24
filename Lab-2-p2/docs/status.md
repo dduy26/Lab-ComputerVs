@@ -24,8 +24,9 @@ Tài liệu cập nhật tiến độ công việc theo mô hình **Roadmap** ch
 - [DONE] **Thành viên 5: Phước** (II.1 & II.2 Scikit-image):
   - Hoàn thành thực hành Canny bằng `skimage.feature.canny` trong thư mục `canny_skimage/`.
 
-- [IN_PROGRESS] **Thành viên 6: Vinh** (II.3):
+- [DONE] **Thành viên 6: Vinh** (II.3):
   - Áp dụng Canny trên nhiều loại ảnh (ảnh nhiễu, ảnh độ tương phản thấp, ảnh nhiều chi tiết).
+  - *Tệp thực thi:* `notebook/4.py` (Phần II.3)
 
 - [DONE] **Thành viên 7: Huy** (II.4 & III.4):
   - Kết hợp Canny với Phân đoạn Contour & Nhận dạng Hough Transform trong `notebook/4.py` (Phần II.4).
