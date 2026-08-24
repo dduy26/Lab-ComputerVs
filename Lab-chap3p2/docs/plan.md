@@ -84,17 +84,15 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
     ```
 
 ---
+### 3️⃣ Bước 3: Lượng tử hóa hệ số (Quantization Strategy)
 
-### 3️⃣ Bước 3: Lượng tử hóa hệ số (Quantization)
-
-* **Mục tiêu 3.1: Giảm độ chính xác liên tục và triệt tiêu biến đổi ánh sáng**
-  * *Mục đích:* Cần biến các hệ số số thực liên tục thành các giá trị nhị phân rời rạc ($0$ và $1$) bền vững trước biến đổi độ sáng/độ tương phản.
-  * *Hàm sử dụng:* Tính trung vị `np.median()` và so sánh ngưỡng nhị phân `(ll_resized >= median_val).astype(int)`.
-  * *Ví dụ Code:*
-    ```python
-    median_val = np.median(ll_resized)
-    quantized_matrix = (ll_resized >= median_val).astype(int)
-    ```
+* **Mục tiêu 3.1: So sánh hai phương pháp lượng tử hóa**
+  * *Lượng tử hóa đa mức (`pywt.quantize`):* Phù hợp cho nén ảnh, giữ nhiều mức độ xám nhưng tạo vector phức tạp, khó so khớp nhanh.
+  * *Lượng tử hóa nhị phân 1-bit (Custom Binarization):* Kỹ thuật tiêu chuẩn của wHash, ánh xạ trực tiếp ma trận hệ số về hai giá trị $\{0, 1\}$.
+* **Mục tiêu 3.2: Lựa chọn chiến lược ngưỡng lượng tử ($T$)**
+  * *Ngưỡng Trung vị (Median Thresholding - Khuyến nghị):* $T = \text{Median}(LL)$, đảm bảo cân bằng 50% bit 0 và 50% bit 1, tối đa hóa Entropy thông tin.
+  * *Ngưỡng Trung bình (Mean Thresholding):* $T = \mu$, giải pháp thay thế khi ảnh có diện tích nền phẳng lớn.
+  * *Hàm sử dụng:* `median_val = np.median(ll_resized)` và `(ll_resized >= median_val).astype(int)`.
 
 ---
 
@@ -117,16 +115,19 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 
 ---
 
-### 5️⃣ Bước 5: So sánh độ tương đồng (Similarity Comparison)
+### 5️⃣ Bước 5: So sánh độ tương đồng & Thực nghiệm kiểm chứng
 
-* **Mục tiêu 5.1: Đếm số bit khác biệt giữa 2 mã băm**
-  * *Mục đích:* Cần tính độ khoảng cách giữa 2 bức ảnh để kết luận chúng giống hay khác nhau.
-  * *Hàm sử dụng:* Khoảng cách Hamming `np.count_nonzero(hash1 != hash2)`.
-  * *Ví dụ Code:*
-    ```python
-    diff_bits = np.count_nonzero(b1 != b2)
-    similarity_pct = (1.0 - diff_bits / len(b1)) * 100.0
-    ```
+* **Mục tiêu 5.1: Thiết lập phép đo khoảng cách Hamming & Tỉ lệ lỗi bit (BER)**
+  * *Công thức tính:* $D_H = \sum (\mathbf{h}_1[i] \oplus \mathbf{h}_2[i])$, $\text{BER} = \frac{D_H}{N}$, $\text{Similarity} = (1 - \text{BER}) \times 100\%$.
+  * *Tiêu chuẩn phân loại:*
+    * $D_H \le 6\text{ bits}$ ($\text{BER} \le 10\%$): **Tương đồng (Match)**.
+    * $7 \le D_H \le 16\text{ bits}$ ($10\% < \text{BER} \le 25\%$): **Vùng nghi vấn (Variant)**.
+    * $D_H \ge 25\text{ bits}$ ($\text{BER} \approx 50\%$): **Khác nhau (Mismatch)**.
+  * *Hàm sử dụng:* `np.count_nonzero(b1 != b2)`.
+* **Mục tiêu 5.2: Triển khai 3 kịch bản thực nghiệm**
+  * *Kịch bản 1:* Ảnh gốc (`meme.jpg`) vs Biến thể chỉnh sửa (`memetest.jpg`) — So sánh OpenCV vs PIL.
+  * *Kịch bản 2:* Ảnh gốc vs Biến thể làm mờ Gauss + Nhiễu hạt (`img_noisy`).
+  * *Kịch bản 3:* Ảnh gốc vs Ma trận Gradient đối chứng (`img_different`).
 
 ---
 
@@ -155,7 +156,7 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 - Đánh giá tốc độ và độ chính xác.
 
 ### Bước 2: Hiểu dữ liệu
-- Dữ liệu là các ảnh có sẵn trong thư mục `data/input/`.
+- Dữ liệu là các ảnh có sẵn trong thư mục `data/input/` (gồm similar và different).
 - Mỗi ảnh được chuyển về grayscale và resize 256×256.
 
 ### Bước 3: Xác định tính năng
@@ -179,8 +180,6 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 
 ### Bước 7: Kết luận
 - Tổng hợp kết quả, nhận xét về hiệu quả của wavelet hash trong tìm kiếm ảnh.
-2. **Xuất đủ kết quả:** In ra mã băm Hex 64-bit, Khoảng cách Hamming, và Đánh giá sự tương đồng.
-3. **Lưu file đầu ra:** Xuất hình ảnh trực quan hóa đầy đủ tại `data/output/wavelet_hash_visualization_cv2.png`.
 
 PHẦN III.1 
 Phần 1: Chuẩn bị dữ liệu thực nghiệm (5 phút)

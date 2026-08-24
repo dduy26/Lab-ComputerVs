@@ -93,6 +93,7 @@ Sơ đồ quy trình tạo mã băm Wavelet bao gồm 3 bước cốt lõi:
 | `visualize_wavelet_hash()` | `matplotlib.pyplot` | Biến đổi DWT cấp 1 (`pywt.dwt2`), vẽ lưới biểu đồ 6 subplot và lưu ảnh tại `data/output/wavelet_hash_visualization_cv2.png`. |
 
 ---
+<div style="height: 40px;"></div>
 
 ## 📖 III. 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet.
 
@@ -107,6 +108,7 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 - **Cơ sở dữ liệu & Truy vấn**: Lưu trữ các mã băm dưới dạng JSON, so sánh bằng khoảng cách Hamming, trả về top‑K ảnh giống nhất.
 
 ### 3. Quy trình xây dựng database
+```
 [Thư mục ảnh]
 │
 ▼ (duyệt từng file)
@@ -114,8 +116,10 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 │
 ▼ (lưu dict)
 [File JSON: { "path": "hash_hex" }]
+```
 
 ### 4. Quy trình tìm kiếm
+```
 [Ảnh truy vấn]
 │
 ▼ (tính hash)
@@ -126,7 +130,7 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 │
 ▼
 [Top K ảnh giống nhất]
-
+```
 
 ### 5. Các hàm chính trong `search_app.py`
 
@@ -138,9 +142,9 @@ Hệ thống tìm kiếm gồm 3 thành phần chính:
 
 ### 6. Đánh giá hiệu năng
 
-- **Tốc độ xây dựng database**: ~0.1 giây/ảnh (phụ thuộc kích thước ảnh).
-- **Tốc độ tìm kiếm**: O(N) với N là số ảnh trong database, thường dưới 0.01 giây cho vài trăm ảnh.
-- **Độ chính xác**: Với ngưỡng Hamming ≤ 10, phân loại đúng trên 95% cho các ảnh biến đổi nhẹ (dựa trên kết quả kiểm thử từ `verify_wavelet_hash.py`).
+- **Tốc độ xây dựng database**: ~0.08 giây cho 22 ảnh.
+- **Tốc độ tìm kiếm**: ~99 ms cho 22 ảnh.
+- **Độ chính xác**: Với ngưỡng Hamming ≤ 1 cho ảnh giống, >10 cho ảnh khác (dựa trên kết quả kiểm thử).
 
 PHẦN III.1 Thực hiện khảo sát về các phương pháp băm wavelet khác nhau và so sánh hiệu suất của chúng.
 1. Khái niệm Biến đổi Wavelet (Discrete Wavelet Transform - DWT)

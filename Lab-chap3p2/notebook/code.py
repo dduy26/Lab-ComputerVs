@@ -222,108 +222,41 @@ if __name__ == "__main__":
     print("\n[3] TRỰC QUAN HÓA TOÀN BỘ BẰNG BIỂU ĐỒ (visualize_wavelet_hash)...")
     visualize_wavelet_hash(img1_path, lib_type="cv2")
 
+# ==========================================================================
+    # [4] PHẦN THÊM MỚI: MỞ RỘNG ĐỦ 3 CẶP ẢNH ĐỂ LẤY SỐ LIỆU CHO BÁO CÁO
+    # ==========================================================================
+    print("\n" + "=" * 70)
+    print("[4] BẢNG TỔNG HỢP KẾT QUẢ THỰC NGHIỆM ĐỦ 3 CẶP ẢNH:")
+    print("=" * 70)
 
-Phần III.1
-import glob
-import time
-import cv2
-import numpy as np
-import pywt
+
+    # 1. Tạo Cặp 2: Biến thể bị làm mờ Gaussian và thêm nhiễu hạt từ ảnh gốc
+    img_blurred = cv2.GaussianBlur(gray_cv2_1, (7, 7), 1.5)
+    noise = np.random.normal(0, 10, gray_cv2_1.shape).astype(np.uint8)
+    img_noisy = cv2.add(img_blurred, noise)
+    hash_noisy = wavelet_hash(img_noisy, wavelet='haar', level=3, hash_size=8)
 
 
-# 1. CAC PHUONG PHAP BAM 
-# PP1: Bam theo he so LL
-def hash_ll(img):
-    gray = (
-        cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if len(img.shape) == 3 else img
-    )
-    LL, _ = pywt.dwt2(gray, "haar")
-    ll_sub = cv2.resize(LL, (8, 8))
-    med = np.median(ll_sub)
-    return (ll_sub > med).astype(int).flatten()
+    # 2. Tạo Cặp 3: Ảnh đối chứng hoàn toàn khác (sử dụng mẫu gradient nhân tạo)
+    img_different = np.tile(np.linspace(0, 255, 256, dtype=np.uint8), (256, 1))
+    hash_diff = wavelet_hash(img_different, wavelet='haar', level=3, hash_size=8)
 
-# PP2: Bam theo nang luong chi tiet (LH, HL, HH)
-def hash_energy(img):
-    gray = (
-        cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) if len(img.shape) == 3 else img
-    )
-    _, (LH, HL, HH) = pywt.dwt2(gray, "haar")
 
-    energies = []
-    for band in [LH, HL, HH]:
-        h, w = band.shape
-        bh, bw = max(1, h // 8), max(1, w // 8)
-        for i in range(8):
-            for j in range(8):
-                block = band[i * bh : (i + 1) * bh, j * bw : (j + 1) * bw]
-                energies.append(np.sum(block**2))
+    # 3. Tính khoảng cách Hamming cho 2 cặp mở rộng
+    dist_pair2, sim_pair2 = hamming_distance(hash1_cv, hash_noisy)
+    dist_pair3, sim_pair3 = hamming_distance(hash1_cv, hash_diff)
 
-    energies = np.array(energies)
-    med = np.median(energies)
-    return (energies > med).astype(int).flatten()
 
-# PP3: Kết hop LL va Chi tiet
-def hash_combined(img):
-    h1 = hash_ll(img)
-    h2 = hash_energy(img)
-    # Lay 45 bit dau cua LL va 19 bit cua Energy cho du 64 bit
-    return np.concatenate([h1[:45], h2[:19]])
+    # 4. Đánh giá theo ngưỡng <= 10 bits
+    eval_pair1 = "TƯƠNG ĐỒNG (Match)" if dist_cv <= 10 else "KHÁC NHAU (Mismatch)"
+    eval_pair2 = "TƯƠNG ĐỒNG (Match)" if dist_pair2 <= 10 else "KHÁC NHAU (Mismatch)"
+    eval_pair3 = "TƯƠNG ĐỒNG (Match)" if dist_pair3 <= 10 else "KHÁC NHAU (Mismatch)"
 
-# Tinh khoang cach Hamming
-def hamming_dist(h1, h2):
-    return np.sum(h1 != h2) / len(h1)
 
-# 2. MAIN CHUYEN CHAY BAI THUCNHANH
+    # 5. In bảng tổng hợp số liệu
+    print(f"\n| {'Phép thử':<36} | {'Hamming':<10} | {'Tương đồng':<12} | {'Đánh giá'}")
+    print("| " + "-" * 36 + " | " + "-" * 10 + " | " + "-" * 12 + " | " + "-" * 22)
+    print(f"| {'Cặp 1: Gốc vs memetest.jpg':<36} | {dist_cv:>2}/64 bit | {sim_cv:>6.2f}%     | {eval_pair1}")
+    print(f"| {'Cặp 2: Gốc vs Làm mờ + Nhiễu':<36} | {dist_pair2:>2}/64 bit | {sim_pair2:>6.2f}%     | {eval_pair2}")
+    print(f"| {'Cặp 3: Gốc vs Ảnh khác loại':<36} | {dist_pair3:>2}/64 bit | {sim_pair3:>6.2f}%     | {eval_pair3}")
 
-# Doc anh tu thu muc data
-paths = sorted(glob.glob("data/*.jpg") + glob.glob("data/*.png"))
-imgs = [cv2.imread(p) for p in paths if cv2.imread(p) is not None]
-
-if len(imgs) < 2:
-    print("Vui long chep it nhat 2-4 file anh (.jpg hoac .png) vao thu muc data!")
-else:
-    # Tao tap cap anh: Cap giong/tuong tu (label 1) va Cap khac nhau (label 0)
-    pairs = []
-    for i in range(0, len(imgs) - 1, 2):
-        pairs.append((imgs[i], imgs[i + 1], 1))
-    for i in range(0, len(imgs) - 2, 2):
-        pairs.append((imgs[i], imgs[i + 2], 0))
-
-    methods = {
-        "PP1 (LL)": hash_ll,
-        "PP2 (Energy)": hash_energy,
-        "PP3 (Combined)": hash_combined,
-    }
-
-    print(" KET QUA SO SANH CUA BAI THUC HANH ")
-    print(
-        f"{'Phuong phap':<18} | {'Accuracy':<10} | {'Time (ms)':<10} | {'Do phan biet':<12}"
-    )
-    print("-" * 60)
-
-    for name, func in methods.items():
-        correct = 0
-        t_start = time.time()
-        diff_dists = []
-
-        for img1, img2, label in pairs:
-            h1 = func(img1)
-            h2 = func(img2)
-            d = hamming_dist(h1, h2)
-
-            # Ngung 0.25: neu dist <= 0.25 la 1 (giong), nguoc lai la 0 (khac)
-            pred = 1 if d <= 0.25 else 0
-            if pred == label:
-                correct += 1
-
-            if label == 0:
-                diff_dists.append(d)
-
-        t_total = (time.time() - t_start) * 1000 / (len(pairs) * 2)
-        acc = (correct / len(pairs)) * 100
-        avg_diff = np.mean(diff_dists) if diff_dists else 0
-
-        print(
-            f"{name:<18} | {acc:>8.1f}% | {t_total:>8.3f}ms | {avg_diff:>12.4f}"
-        )
-      
