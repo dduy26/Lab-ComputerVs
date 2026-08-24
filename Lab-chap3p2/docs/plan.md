@@ -17,3 +17,4 @@
 | 3. Trích xuất wavelet | Kiểm chứng haar/db4/sym2 trên cặp ảnh | ✅ Đã xong (Thông) |
 | 4. Hashing & so sánh | Tạo hash, Hamming, đánh giá | ⏳ Chờ |
 | 5. Nâng cao | Khảo sát phương pháp, tìm kiếm ảnh | ⏳ Chờ |
+
