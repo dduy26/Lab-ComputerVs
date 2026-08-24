@@ -156,7 +156,7 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 - Đánh giá tốc độ và độ chính xác.
 
 ### Bước 2: Hiểu dữ liệu
-- Dữ liệu là các ảnh có sẵn trong thư mục `data/input/`.
+- Dữ liệu là các ảnh có sẵn trong thư mục `data/input/` (gồm similar và different).
 - Mỗi ảnh được chuyển về grayscale và resize 256×256.
 
 ### Bước 3: Xác định tính năng
@@ -180,6 +180,25 @@ Dưới đây là kế hoạch chi tiết từng bước xử lý, mục tiêu k
 
 ### Bước 7: Kết luận
 - Tổng hợp kết quả, nhận xét về hiệu quả của wavelet hash trong tìm kiếm ảnh.
-2. **Xuất đủ kết quả:** In ra mã băm Hex 64-bit, Khoảng cách Hamming, và Đánh giá sự tương đồng.
-3. **Lưu file đầu ra:** Xuất hình ảnh trực quan hóa đầy đủ tại `data/output/wavelet_hash_visualization_cv2.png`.
-4. **Biện luận trường hợp ngoại lệ (Edge Cases):** Phân tích và giải thích được nguyên nhân gây ra *hiện tượng bão hòa bit (Bit Saturation)* trên ảnh nền phẳng đơn sắc trong tài liệu báo cáo `lythuyet.md`.
+
+PHẦN III.1 
+Phần 1: Chuẩn bị dữ liệu thực nghiệm (5 phút)
+Chuẩn bị từ 4 đến 6 tấm ảnh thật trong máy tính.
+Tạo 2-3 cặp ảnh: mỗi cặp gồm 1 ảnh gốc và 1 ảnh cùng nội dung nhưng đã qua chỉnh sửa (xoay, nén, chỉnh sáng, cắt bớt).
+Copy toàn bộ ảnh dán vào thư mục data nằm chung cấp với file run.py.
+Phần 2: Chạy thực nghiệm & Lấy số liệu (2 phút)Mở VS Code, chạy lệnh trong Terminal: python run.py.
+Chụp lại màn hình kết quả in ra ở bảng Terminal (gồm 3 cột chính: Accuracy, Time (ms), Độ phân biệt).
+Phần 3: Soạn thảo Báo cáo (Word / Slide)I.
+Đặt vấn đề & Cơ sở lý thuyết
+Khái niệm Perceptual Hash: Giải thích ngắn gọn cách tạo mã băm hình ảnh để so sánh nội dung trực quan thay vì mã băm mật mã.
+Biến đổi Wavelet (DWT): Giới thiệu nguyên lý phân rã ảnh thành 4 băng tần $LL$ (xấp xỉ tần số thấp) và $LH, HL, HH$ (chi tiết tần số cao).
+3 Phương pháp khảo sát:
+PP1 (LL Hash): Nhị phân hóa băng tần $LL$ để lấy đặc trưng khung ảnh.
+PP2 (Energy Hash): Tính tổng năng lượng các khối chi tiết $LH, HL, HH$ để đại diện cho kết cấu.
+PP3 (Combined Hash): Kết hợp chuỗi bit từ $LL$ và $Energy$ theo tỷ lệ cố định.II. 
+Kết quả thực nghiệm
+Dán hình ảnh màn hình chạy code / chèn bảng số liệu thu được từ Terminal vào báo cáo.
+III. Nhận xét & Kết luận
+PP1 (LL): Tốc độ tính toán nhanh nhất, giữ cấu trúc tổng thể tốt nhưng dễ sót chi tiết nhỏ.
+PP2 (Energy): Nhạy với chi tiết và kết cấu bề mặt, nhưng tốn thời gian tính toán năng lượng hơn.
+PP3 (Combined): Cho kết quả tối ưu nhất, cân bằng tốt giữa khả năng nhận diện ảnh tương tự và độ phân biệt ảnh khác biệt.
