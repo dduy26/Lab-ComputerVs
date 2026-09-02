@@ -1,265 +1,314 @@
-# PHẦN IV: BÁO CÁO LÝ THUYẾT BĂM HÌNH ẢNH WAVELET (WAVELET HASHING - wHash)
+#  LÝ THUYẾT TỔNG HỢP & THỰC NGHIỆM - LAB-CHAP3P2
+## SO SÁNH SỰ TƯƠNG ĐỒNG CỦA CÁC HÌNH ẢNH SỬ DỤNG WAVELET HASH (wHash)
 
+> **Môn học:** Xử Lý Ảnh Số / Thị Giác Máy Tính  
 > **Dự án:** `Lab-chap3p2`  
-> **Tên tệp báo cáo:** `docs/lythuyet.md`  
-> **Tệp mã nguồn đi kèm:** [`notebook/code.py`](file:///d:/X%E1%BB%AD%20l%C3%AD%20%E1%BA%A3nh/FileGit/Lab-ComputerVs/Lab-chap3p2/notebook/code.py)
+> **Tệp báo cáo:** `docs/lythuyet.md`  
+> **Mã nguồn tích hợp:** [`notebook/code.py`](file:///d:/X%E1%BB%AD%20L%C3%AD%20%E1%BA%A2nh/Lab/Lab-chap3p2/notebook/code.py)  
+> **Notebook hoàn chỉnh:** [`notebook/lab-chap3-p2.ipynb`](file:///d:/X%E1%BB%AD%20L%C3%AD%20%E1%BA%A2nh/Lab/Lab-chap3p2/notebook/lab-chap3-p2.ipynb)
 
 ---
 
-## 📖 I. TỔNG QUAN VỀ BĂM HÌNH ẢNH CẢM NHẬN (PERCEPTUAL IMAGE HASHING)
+## 📌 BẢNG PHÂN CÔNG NHIỆM VỤ DỰ ÁN (7 THÀNH VIÊN)
 
-Mã băm hình ảnh cảm nhận (Perceptual Image Hashing) là kỹ thuật tạo ra một chuỗi nhị phân cố định (mã băm - hash code) đại diện cho nội dung cấu trúc thị giác của hình ảnh.
-
-Khác với các hàm băm mật mã học truyền thống (như MD5, SHA-256 - nơi chỉ cần thay đổi 1 pixel cũng làm mã băm thay đổi hoàn toàn), mã băm Perceptual có tính chất **Bền vững (Robustness)**:
-- Hai bức ảnh có nội dung giống nhau nhưng bị biến đổi nhỏ (nén JPEG, xoay góc nhẹ, thay đổi ánh sáng, chỉnh độ tương phản) sẽ cho ra hai mã băm gần như trùng khớp.
-- Thuật toán **Wavelet Hash (wHash)** sử dụng phép biến đổi Wavelet rời rạc 2D (2D DWT) để trích xuất đặc trưng cấu trúc tần số thấp, mang lại độ chính xác và tính bền vững cao vượt trội so với các phương pháp dựa trên DCT (Discrete Cosine Transform) hay Average Hash (aHash).
+| STT | Thành viên | Phụ trách nội dung | Phần bài làm |
+| :---: | :--- | :--- | :--- |
+| **1** | **Thông** | Tổng quan mục tiêu, Chuẩn bị dữ liệu (thư mục, naming, 22 ảnh), Trích xuất Wavelet 2D (`pywt.wavedec2`), Phân tích 4 băng tần (LL, LH, HL, HH) và ảnh hưởng của wavelet base. | **Phần I + II.1 + II.2** |
+| **2** | **Đức** | Quá trình lượng tử hóa hệ số (Median/Mean), Nhị phân hóa mã băm (64-bit/Hex), Giải thích Khoảng cách Hamming, Ngưỡng quyết định tương đồng ($\le 10\%$), Thực nghiệm 3 cặp ảnh. | **Phần II.3 + II.4** |
+| **3** | **Duy** | Đánh giá chỉ số hiệu suất: Accuracy, Sensitivity (Recall), Specificity, Confusion Matrix; Ý nghĩa AUC và Hướng dẫn vẽ Đường cong ROC bằng `sklearn.metrics` & `matplotlib`. | **Phần II.5 (Đánh giá & ROC)** |
+| **4** | **Thọ** | Giải thích 3 bước Wavelet Hash (Phân tích tần số $\rightarrow$ Lượng tử hóa $\rightarrow$ Tạo mã băm); Code hoàn chỉnh đọc & chuẩn hóa ảnh đầu vào bằng OpenCV và PIL. | **Phần IV (Tham khảo & Pipeline)** |
+| **5** | **Vinh** | Cải tiến code mẫu (tham số `hash_size`, xử lý ngoại lệ, tối ưu lấy LL, chuẩn hóa Min-Max); So sánh 4 loại Wavelet (`haar`, `db4`, `sym4`, `coif2`) về độ chính xác và tốc độ. | **Phần V (Triển khai & Cải tiến)** |
+| **6** | **Huy** | Khảo sát các phương pháp băm Wavelet: PP1 (LL Hash), PP2 (Detail Energy Hash), PP3 (Combined Hash); Bảng so sánh 3 PP về Accuracy, Execution Time và Khả năng phân biệt. | **Phần III.1 (Khảo sát các PP)** |
+| **7** | **Phước** | Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên Wavelet Hash (CLI app, CSDL JSON, Tìm kiếm Top-K Hamming, Đánh giá tốc độ & độ chính xác). | **Phần III.2 (Ứng dụng Tìm kiếm)** |
 
 ---
 
-## 📖 II. GIẢI THÍCH CHI TIẾT 3 BƯỚC CỦA THUẬT TOÁN WAVELET HASH (wHash)
+## 📖 PHẦN I: MỤC TIÊU BÀI TẬP (MEMBER 1: THÔNG)
 
-Sơ đồ quy trình tạo mã băm Wavelet bao gồm 3 bước cốt lõi:
+### 1. Tổng quan bài tập
+Mã băm cảm nhận (Perceptual Image Hashing) là kỹ thuật nén nội dung thị giác của hình ảnh thành một chuỗi nhị phân cố định (mã băm - hash code).
+Khác với các thuật toán băm mật mã học (như MD5, SHA-256 - nơi chỉ cần thay đổi 1 pixel cũng làm mã băm thay đổi hoàn toàn), mã băm Perceptual sở hữu tính chất **Bền vững (Robustness)**:
+- Hai bức ảnh có cùng nội dung cấu trúc nhưng chịu các biến đổi nhẹ (nén JPEG, xoay góc nhỏ, đổi độ sáng, mờ nhiễu) sẽ cho hai mã băm tương đồng (khoảng cách Hamming nhỏ).
+- Thuật toán **Wavelet Hash (wHash)** sử dụng Phép biến đổi Wavelet rời rạc 2D (2D DWT) để trích xuất đặc trưng cấu trúc ở băng tần tần số thấp, mang lại độ chính xác cao và khả năng chống nhiễu vượt trội hơn hẳn so với aHash (Average Hash) hay dHash (Difference Hash).
 
+### 2. Mục tiêu kỹ thuật
+- **Nắm vững biến đổi Wavelet 2D:** Sử dụng thư viện `PyWavelets` (`pywt.wavedec2()`) để phân tích đa độ phân giải.
+- **Biết cách trích xuất thông tin:** Tách biệt thành phần xấp xỉ ($LL$) chứa thông tin năng lượng chính và thành phần chi tiết ($LH, HL, HH$).
+- **Lượng tử hóa & So sánh:** Biến đổi các hệ số Wavelet liên tục thành mã nhị phân 64-bit và đo khoảng cách Hamming.
+- **Đánh giá & Ứng dụng:** Khảo sát các biến thể thuật toán, đánh giá chỉ số ROC/AUC và xây dựng hệ thống tìm kiếm ảnh.
+
+---
+
+## 🗂️ PHẦN II.1 & II.2: CHUẨN BỊ DỮ LIỆU & TRÍCH XUẤT WAVELET (MEMBER 1: THÔNG)
+
+### 1. Chuẩn bị dữ liệu (II.1)
+
+#### 🏢 Cách tổ chức thư mục:
 ```
-[Ảnh đầu vào] 
-      │
-      ▼ (Bước 1: Phân tách tần số)
-[Biến đổi Wavelet 2D (2D DWT)] ──► Phân tách 4 băng tần (LL, LH, HL, HH) ──► Trích xuất Băng tần LL
-      │
-      ▼ (Bước 2: Lượng tử hóa)
-[Lượng tử hóa hệ số (Quantization)] ──► So sánh hệ số LL với giá trị Trung vị (Median)
-      │
-      ▼ (Bước 3: Tạo mã nhị phân & Hex)
-[Tạo mã băm Nhị phân (Binary Hash)] ──► Chuỗi 64-bit Nhị phân & Chuỗi Hex ──► Khoảng cách Hamming
+data/input/
+├── meme.jpg                    # Ảnh gốc (nhóm giống)
+├── memetest.jpg                # Ảnh đối chứng mặc định
+├── similar/                    # 16 biến thể của meme.jpg (ảnh giống nhau)
+│   ├── similar_meme_rot5.png   # Xoay 5°
+│   ├── similar_meme_rot15.png  # Xoay 15°
+│   ├── similar_meme_scale90.png# Thu nhỏ 90%
+│   ├── similar_meme_gauss15.png# Nhiễu Gaussian σ=15
+│   ├── similar_meme_saltpepper3.png # Nhiễu muối tiêu 3%
+│   ├── similar_meme_blur.png   # Làm mờ Gaussian (5x5)
+│   ├── similar_meme_bright30.png    # Tăng độ sáng +30
+│   ├── similar_meme_contrast1p5.png # Tăng tương phản x1.5
+│   └── ...
+└── different/                  # 6 ảnh khác hẳn (ẢNH THẬT người dùng chụp)
+    ├── different_memetest.png
+    ├── different_awww.png
+    ├── different_hehehe.jpg
+    └── different_huhu.png
 ```
 
----
+#### 🏷️ Quy tắc đặt tên file:
+`<nhóm>_<đối tượng>_<biến thể>.<jpg|png>`
+- `similar` / `different`: Nhóm dữ liệu.
+- `meme` / `memetest` / `awww`: Tên đối tượng gốc.
+- `rot15`, `gauss15`, `blur`: Phép biến đổi áp dụng.
 
-### 1️⃣ Bước 1: Biến đổi Wavelet (Phân tích tần số và không gian)
-
-* **Nguyên lý:**
-  Ảnh đầu vào (sau khi được đưa về dạng ảnh mức xám và chuẩn hóa kích thước $256 \times 256$) được phân tích đa độ phân giải bằng biến đổi Wavelet rời rạc 2D (2D DWT) với các hàm cơ sở như `haar` hoặc `db4` (Daubechies 4).
-* **Phân tách các băng tần (Sub-bands):**
-  Phép biến đổi 2D DWT phân tách ảnh thành 4 băng tần tần số ở cấp 1 (và tiếp tục phân tách cấp 2, cấp 3 trên băng tần LL):
-  1. **Băng tần LL (Low-Low):** Băng tần xấp xỉ tần số thấp theo cả chiều ngang và chiều dọc. Đây là nơi chứa **phần lớn năng lượng và cấu trúc hình học tổng thể** của hình ảnh.
-  2. **Băng tần LH (Low-High):** Chứa các chi tiết biên tần số cao theo chiều ngang.
-  3. **Băng tần HL (High-Low):** Chứa các chi tiết biên tần số cao theo chiều dọc.
-  4. **Băng tần HH (High-High):** Chứa các chi tiết đường chéo và nhiễu tần số cao.
-* **Tác dụng của Băng tần LL:**
-  Băng tần **LL** giữ thông tin hình dạng nội dung chính mà mắt người cảm nhận được. Các chi tiết tần số cao (LH, HL, HH) dễ bị làm mờ hoặc mất đi do nén ảnh JPEG, trong khi băng tần LL cực kỳ bền vững trước nhiễu và biến đổi môi trường.
+#### 📊 Số lượng ảnh:
+- **Tập Similar (Dương tính):** 16 ảnh (từ `meme.jpg` qua 6 nhóm biến đổi: xoay, scale, nhiễu, blur, sáng/tương phản, crop/flip).
+- **Tập Different (Âm tính):** 6 ảnh (ảnh `memetest.jpg` + 5 ảnh chụp thực tế ngoài đời).
+- **Tổng cộng:** 22 ảnh (đạt tiêu chuẩn yêu cầu 20-30 ảnh).
 
 ---
 
-### 2️⃣ Bước 2: Lượng tử hóa hệ số (Quantization - Giảm độ chính xác)
+### 2. Trích xuất Wavelet 2D (II.2)
 
-* **Khái niệm Lượng tử hóa:**
-  Các hệ số thu được từ băng tần LL là các số thực chấm động (floating-point continuous values). Lượng tử hóa làm giảm độ phân giải số (precision reduction), biến các hệ số liên tục thành các giá trị rời rạc nhị phân $0$ và $1$ nhằm **giảm độ nhạy cảm đối với các biến động số học nhỏ**.
-* **Lượng tử hóa dựa trên Trung vị (Median Thresholding):**
-  1. Resize/Crop ma trận hệ số LL về kích thước mã băm mong muốn $N \times N$ (ví dụ: $8 \times 8 = 64$ hệ số).
-  2. Tính giá trị **Trung vị (Median)** của toàn bộ 64 hệ số trong ma trận $8 \times 8$:
-     $$M = \text{median}(LL_{8 \times 8})$$
-  3. Áp dụng phân ngưỡng nhị phân:
+#### 📐 Giải thích biến đổi Wavelet 2D (`pywt.wavedec2`):
+Hàm `pywt.wavedec2(img, wavelet, level)` thực hiện phân tích đa độ phân giải 2D:
+1. Chiều ngang và chiều dọc của ảnh lần lượt đi qua bộ lọc thông thấp (Low-pass $L$) và thông cao (High-pass $H$).
+2. Kết quả thu được 4 băng tần ở cấp 1:
+   - **$LL$ (Low-Low):** Băng tần xấp xỉ tần số thấp theo cả 2 chiều, chứa **năng lượng chính và cấu trúc tổng thể** của hình ảnh.
+   - **$LH$ (Low-High):** Chi tiết tần số cao theo chiều ngang (chứa đường biên ngang).
+   - **$HL$ (High-Low):** Chi tiết tần số cao theo chiều dọc (chứa đường biên dọc).
+   - **$HH$ (High-High):** Chi tiết tần số cao theo chiều chéo (chứa đường biên chéo và nhiễu).
+
+#### 🔬 Kích thước các băng tần (với ảnh $256 \times 256$, `haar`, level 3):
+- Ma trận $LL_3$: kích thước $32 \times 32$.
+- Các chi tiết $LH_3, HL_3, HH_3$: kích thước $32 \times 32$.
+- Các chi tiết Cấp 2 ($64 \times 64$), Cấp 1 ($128 \times 128$).
+
+#### ⚖️ Ảnh hưởng của việc chọn loại Wavelet base:
+- **`haar`:** Đơn giản nhất, bậc lọc ngắn (length=2), tốc độ tính toán cực nhanh. Phản ứng nhạy với biên độ thay đổi đột ngột.
+- **`db4` (Daubechies 4):** Bậc lọc dài hơn, mịn hơn `haar`, khả năng triệt tiêu nhiễu cao hơn nhưng chi phí tính toán tăng.
+- **`sym2` (Symlet 2):** Tính đối xứng gần đúng, giúp giảm biến dạng pha khi trích xuất cấu trúc hình học.
+
+---
+
+## 🧮 PHẦN II.3 & II.4: LƯỢNG TỬ HÓA MÃ BĂM & HAMMING DISTANCE (MEMBER 2: ĐỨC)
+
+### 1. Quá trình lượng tử hóa hệ số (II.3)
+Các hệ số thu được ở băng tần $LL$ là các số thực chấm động (floating-point). Quá trình lượng tử hóa (Quantization) làm giảm độ chính xác số học để chuyển các giá trị liên tục này thành các bit nhị phân $0$ và $1$.
+
+#### 📉 Các phương pháp phân ngưỡng lượng tử:
+1. **Lượng tử hóa dựa trên Trung vị (Median Thresholding - Khuyên dùng):**
+   - Resize ma trận $LL$ về kích thước $8 \times 8 = 64$ hệ số.
+   - Tính giá trị Trung vị $M = \text{median}(LL_{8 \times 8})$.
+   - Tạo bit nhị phân:
      $$Q(i, j) = \begin{cases} 1 & \text{nếu } LL(i, j) \ge M \\ 0 & \text{nếu } LL(i, j) < M \end{cases}$$
-* **Ý nghĩa:**
-  So sánh với giá trị trung vị đảm bảo phân bố bit `1` và `0` luôn cân bằng 50% - 50%. Kỹ thuật này triệt tiêu ảnh hưởng của sự thay đổi độ sáng tổng thể (brightness) hoặc độ tương phản (contrast).
+   - **Ưu điểm:** Đảm bảo số lượng bit `1` và `0` luôn cân bằng chính xác 50% - 50% (32 bit `1` và 32 bit `0`), triệt tiêu hoàn toàn ảnh hưởng của việc tăng giảm độ sáng tổng thể.
+2. **Lượng tử hóa dựa trên Trung bình (Mean Thresholding):**
+   - So sánh với giá trị $M = \text{mean}(LL_{8 \times 8})$. Dễ bị lệch bit khi ảnh có một số vùng quá sáng hoặc quá tối.
+3. **Thư viện `pywt.quantize`:** Lượng tử hóa theo mức cố định.
+
+#### 🔢 Chuyển ma trận thành mã nhị phân & Hex:
+- Duỗi thẳng ma trận $8 \times 8$ thành vector 64 bits nhị phân.
+- Gom nhóm mỗi 4 bits nhị phân thành 1 ký tự Hexadecimal (0-F) thu được chuỗi Hex 16 ký tự (ví dụ: `ffffffffff99ffff`).
 
 ---
 
-### 3️⃣ Bước 3: Tạo mã băm (Binary Hash Code & Hex Representation)
+### 2. So sánh hàm băm & Khoảng cách Hamming (II.4)
 
-* **Chuỗi nhị phân:**
-  Ma trận lượng tử hóa $Q$ kích thước $8 \times 8$ được duỗi thẳng (flatten) thành một mảng 1D gồm **64 bits nhị phân** ($0$ và $1$).
-* **Chuỗi Hexadecimal:**
-  Gom mỗi 4 bits nhị phân thành 1 ký tự Hex (0-F) để tạo chuỗi băm Hex ngắn gọn 16 ký tự (ví dụ: `ffffffffff99ffff`).
-* **So sánh độ tương đồng bằng Khoảng cách Hamming (Hamming Distance):**
-  Khoảng cách Hamming giữa hai mã băm nhị phân $H_A$ và $H_B$ đếm số lượng bit khác biệt:
-  $$D_{\text{Hamming}} = \sum_{i=1}^{K} (H_A[i] \oplus H_B[i])$$
-  * **Tỷ lệ tương đồng (%):** $\text{Similarity} = \left(1 - \frac{D_{\text{Hamming}}}{K}\right) \times 100\%$
-  * **Quy tắc đánh giá:**
-    * $D_{\text{Hamming}} \le 10 \text{ bits}$: Hai hình ảnh **TƯƠNG ĐỒNG / GIỐNG NHAU** (Duplicate / Similar images).
-    * $D_{\text{Hamming}} > 10 \text{ bits}$: Hai hình ảnh **KHÁC NHAU** (Different images).
+#### 📐 Công thức Khoảng cách Hamming:
+Khoảng cách Hamming giữa hai mã băm nhị phân $H_1$ và $H_2$ đếm tổng số bit khác biệt tại cùng vị trí:
+$$D_{\text{Hamming}} = \sum_{i=1}^{K} (H_1[i] \neq H_2[i])$$
+Tỷ lệ tương đồng (%):
+$$\text{Similarity} = \left(1 - \frac{D_{\text{Hamming}}}{K}\right) \times 100\%$$
+
+#### 🎯 Ngưỡng quyết định tương đồng:
+- Với độ dài mã băm $K = 64$ bits, ngưỡng quyết định hai ảnh tương đồng là **$\le 10\%$ độ dài hash**, tương đương:
+  $$D_{\text{Hamming}} \le 6 \text{ bits} \quad (\text{hoặc } \le 10 \text{ bits tùy độ mở rộng})$$
+- Nếu $D_{\text{Hamming}} \le 6$ (hoặc $\le 10$): Hai ảnh được kết luận là **TƯƠNG ĐỒNG / GIỐNG NHAU**.
+- Nếu $D_{\text{Hamming}} > 10$: Hai ảnh được kết luận là **KHÁC NHAU**.
+
+#### 📊 Minh họa số liệu thực nghiệm trên 3 cặp ảnh mẫu:
+
+| Phép thử | Khoảng cách Hamming | Tỷ lệ Tương đồng (%) | Đánh giá phân loại |
+| :--- | :---: | :---: | :---: |
+| **Cặp 1: Ảnh gốc vs Ảnh gốc (meme.jpg)** | `0 / 64 bit` | `100.00%` | **TƯƠNG ĐỒNG (Match)** |
+| **Cặp 2: Gốc vs Biến thể (Blur + Noise)** | `2 / 64 bit` | `96.88%` | **TƯƠNG ĐỒNG (Match)** |
+| **Cặp 3: Gốc vs Ảnh khác loại (memetest.jpg)** | `33 / 64 bit` | `48.44%` | **KHÁC NHAU (Mismatch)** |
 
 ---
 
-## 📖 II.5. ĐÁNH GIÁ HIỆU SUẤT THUẬT TOÁN VÀ ĐƯỜNG CONG ROC (EVALUATION METRICS & ROC CURVE)
-> **Phụ trách:** Thành viên 3: Duy (random)
+## 📈 PHẦN II.5: ĐÁNH GIÁ HIỆU SUẤT VÀ ĐƯỜNG CONG ROC (MEMBER 3: DUY)
 
-### 1️⃣ Khái niệm Ma trận Nhầm lẫn (Confusion Matrix) & Chỉ số đánh giá
+### 1. Ma trận Nhầm lẫn (Confusion Matrix)
+Khi kiểm thử bài toán phân loại nhị phân trên $N$ cặp ảnh với ngưỡng Hamming $D \le 10$:
+- **TP (True Positive):** Cặp ảnh thực sự **Tương đồng** được dự đoán đúng là **Tương đồng**.
+- **TN (True Negative):** Cặp ảnh thực sự **Khác biệt** được dự đoán đúng là **Khác biệt**.
+- **FP (False Positive):** Cặp ảnh **Khác biệt** bị dự đoán nhầm là **Tương đồng** (Báo động giả).
+- **FN (False Negative):** Cặp ảnh **Tương đồng** bị dự đoán nhầm là **Khác biệt** (Bỏ sót).
 
-Khi đánh giá bài toán phân loại nhị phân cặp hình ảnh (Tương đồng vs Khác biệt) dựa trên ngưỡng khoảng cách Hamming $D_{\text{Hamming}} \le 10$ bits, các kết quả dự đoán được phân loại vào 4 ô của Ma trận Nhầm lẫn:
-
-- **TP (True Positive - Dương tính thật):** Số lượng cặp ảnh thực sự **TƯƠNG ĐỒNG** được mô hình dự đoán chính xác là **TƯƠNG ĐỒNG** ($D_{\text{Hamming}} \le 10$).
-- **TN (True Negative - Âm tính thật):** Số lượng cặp ảnh thực sự **KHÁC BIỆT** được mô hình dự đoán chính xác là **KHÁC BIỆT** ($D_{\text{Hamming}} > 10$).
-- **FP (False Positive - Dương tính giả / Type I Error):** Số lượng cặp ảnh thực sự **KHÁC BIỆT** nhưng mô hình phán đoán nhầm là **TƯƠNG ĐỒNG**.
-- **FN (False Negative - Âm tính giả / Type II Error):** Số lượng cặp ảnh thực sự **TƯƠNG ĐỒNG** nhưng mô hình phán đoán nhầm là **KHÁC BIỆT**.
-
-#### Công thức toán học các chỉ số đánh giá:
+### 2. Các chỉ số đánh giá cốt lõi
 
 1. **Độ chính xác (Accuracy):**
-   Tỷ lệ dự đoán đúng (cả Tương đồng và Khác biệt) trên tổng số cặp thử nghiệm:
    $$\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$$
-
 2. **Độ nhạy (Sensitivity / Recall / True Positive Rate - TPR):**
-   Tỷ lệ các cặp ảnh tương đồng thực tế được mô hình nhận diện thành công:
    $$\text{Sensitivity} = \frac{TP}{TP + FN}$$
-
 3. **Độ đặc hiệu (Specificity / True Negative Rate - TNR):**
-   Tỷ lệ các cặp ảnh khác biệt thực tế được mô hình phát hiện và loại trừ chính xác:
    $$\text{Specificity} = \frac{TN}{TN + FP}$$
 
 ---
 
-### 2️⃣ Đường cong ROC (Receiver Operating Characteristic) & Ý nghĩa AUC
+### 3. Đường cong ROC (Receiver Operating Characteristic) & Ý nghĩa AUC
 
-* **Đường cong ROC (ROC Curve):**
-  Là biểu đồ đường biểu diễn sự thay đổi của **True Positive Rate (Sensitivity)** trên trục tung $y$ so với **False Positive Rate ($\text{FPR} = 1 - \text{Specificity}$)** trên trục hoành $x$ tại mọi ngưỡng quyết định điểm tương đồng (Similarity Score thresholds từ 0.0 đến 1.0).
-
-* **Giải thích ý nghĩa AUC (Area Under Curve):**
-  - **AUC** là diện tích bề mặt nằm dưới đường cong ROC, mang giá trị số thực nằm trong khoảng $[0.5, 1.0]$.
-  - **$\text{AUC} = 1.0$ (Lý tưởng):** Thuật toán phân loại hoàn hảo, phân tách tuyệt đối 100% giữa tập các cặp ảnh tương đồng và tập khác biệt mà không có sự chồng lấp điểm số.
-  - **$0.9 \le \text{AUC} < 1.0$ (Xuất sắc):** Khả năng phân biệt cực kỳ cao và ổn định.
-  - **$\text{AUC} = 0.5$ (Ngẫu nhiên):** Thuật toán không có khả năng phân biệt (tương đương tung đồng xu ngẫu nhiên).
+- **Đường cong ROC:** Biểu diễn sự biến thiên của $TPR$ (Trục $Y$) theo $FPR = 1 - \text{Specificity}$ (Trục $X$) tại mọi ngưỡng điểm tương đồng $S \in [0, 1]$.
+- **Ý nghĩa chỉ số AUC (Area Under Curve):**
+  - $\text{AUC} = 1.0$: Phân loại hoàn hảo 100%.
+  - $0.9 \le \text{AUC} < 1.0$: Mô hình xuất sắc.
+  - $\text{AUC} = 0.5$: Phân loại ngẫu nhiên (không có giá trị).
 
 ---
 
-### 3️⃣ Hướng dẫn vẽ ROC bằng `sklearn.metrics.roc_curve` và `matplotlib`
+### 4. Hướng dẫn vẽ đường cong ROC bằng `sklearn` và `matplotlib`
 
-Để vẽ đường cong ROC thực nghiệm từ tập mã băm thu được, quy trình gồm 4 bước:
+```python
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
 
-1. **Chuẩn bị mảng nhãn `y_true` và mảng điểm số `y_scores`:**
-   Mỗi cặp ảnh được gán nhãn thực tế $y_{\text{true}} \in \{0, 1\}$ và tính điểm tương đồng liên tục:
-   $$s_i = 1 - \frac{D_{\text{Hamming}}}{64}$$
+# 1. Tính toán FPR, TPR và AUC
+fpr, tpr, thresholds = roc_curve(y_true, y_scores)
+roc_auc = auc(fpr, tpr)
 
-2. **Gọi hàm `roc_curve` và `auc` từ thư viện `sklearn.metrics`:**
-   ```python
-   from sklearn.metrics import roc_curve, auc
-   
-   # Tính toán các tỷ lệ FPR, TPR và tập ngưỡng
-   fpr, tpr, thresholds = roc_curve(y_true, y_scores)
-   
-   # Tính diện tích dưới đường cong AUC
-   roc_auc = auc(fpr, tpr)
-   ```
-
-3. **Vẽ biểu đồ đồ họa với `matplotlib.pyplot`:**
-   ```python
-   import matplotlib.pyplot as plt
-   
-   plt.figure(figsize=(8, 6))
-   # Vẽ đường ROC thực nghiệm
-   plt.plot(fpr, tpr, color='darkorange', lw=2, label=f'Đường cong ROC (AUC = {roc_auc:.4f})')
-   # Vẽ đường phân cách ngẫu nhiên AUC = 0.5
-   plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Phân loại ngẫu nhiên (AUC = 0.5)')
-   
-   plt.xlim([0.0, 1.0])
-   plt.ylim([0.0, 1.05])
-   plt.xlabel('False Positive Rate (1 - Specificity)', fontsize=11)
-   plt.ylabel('True Positive Rate (Sensitivity / Recall)', fontsize=11)
-   plt.title('ĐƯỜNG CONG ROC VÀ ĐÁNH GIÁ HIỆU SUẤT WAVELET HASH (wHash)', fontsize=12, fontweight='bold')
-   plt.legend(loc="lower right")
-   plt.grid(True, linestyle=':', alpha=0.6)
-   
-   # Lưu biểu đồ xuất ra file
-   plt.savefig("data/output/roc_curve_evaluation.png", dpi=150)
-   plt.close()
-   ```
+# 2. Vẽ biểu đồ ROC
+plt.figure(figsize=(8, 6))
+plt.plot(fpr, tpr, color='darkorange', lw=2.5, label=f'ROC curve (AUC = {roc_auc:.4f})')
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--', label='Random Chance (AUC = 0.5)')
+plt.xlabel('False Positive Rate (1 - Specificity)')
+plt.ylabel('True Positive Rate (Sensitivity)')
+plt.title('ROC CURVE - WAVELET HASH EVALUATION')
+plt.legend(loc="lower right")
+plt.grid(True, linestyle=':', alpha=0.6)
+plt.savefig("data/output/roc_curve_evaluation.png", dpi=150)
+```
 
 ---
 
-### 4️⃣ Đánh giá hiệu suất thuật toán dựa trên các chỉ số thực nghiệm
+## 🛠️ PHẦN IV: THAM KHẢO & CODE OPENCV / PIL HOÀN CHỈNH (MEMBER 4: THỌ)
 
-* **Đánh giá về tính Bền vững (Robustness):**
-  Thuật toán Wavelet Hash trích xuất đặc trưng xấp xỉ tần số thấp ở băng tần $LL$ (Low-Low) qua phép biến đổi `pywt.wavedec2()`. Do đó, các biến đổi hình ảnh như nén nhe, làm mờ Gauss, xoay nhỏ ($\pm 15^\circ$), hay chỉnh độ sáng không làm thay đổi các hệ số LL chính, giúp **Sensitivity (Recall)** tiến sát $100\%$.
+### 1. Chi tiết 3 bước của thuật toán Wavelet Hash (wHash)
+```
+[Ảnh Đầu Vào]
+      │
+      ▼ (Bước 1: Phân tách tần số 2D-DWT)
+[Băng tần LL (Tần số thấp xấp xỉ)] ──► Giữ năng lượng & bố cục chính
+      │
+      ▼ (Bước 2: Lượng tử hóa Median)
+[Ma trận Bit 8x8] ──► So sánh từng phần tử với Median(LL)
+      │
+      ▼ (Bước 3: Tạo mã nhị phân & Hex)
+[Mã băm 64-bit & Chuỗi Hex 16 ký tự] ──► So sánh bằng Khoảng cách Hamming
+```
 
-* **Đánh giá về khả năng Phân biệt (Discrimination):**
-  Lượng tử hóa trung vị `np.median()` tạo ra mã nhị phân 64-bit cân bằng entropy. Khi so sánh hai ảnh có nội dung hoàn toàn khác biệt, khoảng cách Hamming dao động trung bình khoảng $28 - 36$ bits ($\text{BER} \approx 50\%$), giúp **Specificity** đạt $100\%$.
+### 2. Code xử lý ảnh đầu vào bằng OpenCV và PIL
 
-* **Kết luận chung:**
-  Tổng hợp lại, thuật toán đạt chỉ số **Accuracy = 1.0**, **Sensitivity = 1.0**, **Specificity = 1.0** và **AUC = 1.0** trên tập thử nghiệm chuẩn hóa, chứng minh tính hiệu quả vượt trội của Wavelet Hash trong ứng dụng tìm kiếm và so sánh ảnh cảm nhận.
+#### 🔹 Đọc ảnh bằng OpenCV (Chống lỗi tiếng Việt Unicode trên Windows):
+```python
+def preprocess_image_cv2(image_path, target_size=(256, 256)):
+    # Đọc mảng byte an toàn bằng np.fromfile
+    img_array = np.fromfile(image_path, dtype=np.uint8)
+    img = cv2.imdecode(img_array, cv2.IMREAD_COLOR)
+    if len(img.shape) == 3:
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    else:
+        gray = img
+    return cv2.resize(gray, target_size, interpolation=cv2.INTER_AREA)
+```
+
+#### 🔹 Đọc ảnh bằng PIL:
+```python
+def preprocess_image_pil(image_path, target_size=(256, 256)):
+    img = Image.open(image_path)
+    gray = img.convert('L')
+    resized = gray.resize(target_size, Image.Resampling.LANCZOS)
+    return np.array(resized)
+```
+
+#### 🔹 Code mẫu tham khảo từ Slide 17:
+```python
+def wavelet_hash_slide_sample(image_path, wavelet='db4', level=3):
+    img = preprocess_image_cv2(image_path)
+    coeffs = pywt.wavedec2(img, wavelet=wavelet, level=level)
+    coeffs_quant = [np.floor(np.abs(c) / 2.0).astype(int) for c in coeffs]
+    flattened = np.concatenate([c.flatten() for c in coeffs_quant])
+    hash_code = [int(bit) % 2 for bit in flattened]
+    return hash_code
+```
 
 ---
 
-## 📖 III. BẢNG MÔ TẢ CÁC HÀM XỬ LÝ TRONG FILE `code.py`
+## ⚡ PHẦN V: TRIỂN KHAI VỚI PYTHON & PYWAVELETS (MEMBER 5: VINH)
 
-| Tên hàm | Thư viện sử dụng | Chức năng chi tiết |
-| :--- | :--- | :--- |
-| `resolve_path()` | `os.path` | Tự động xác định đường dẫn ảnh tuyệt đối an toàn bất kể CWD hiện tại. |
-| `preprocess_image_cv2()` | `cv2` (OpenCV), `numpy` | Đọc ảnh qua `np.fromfile` + `cv2.imdecode` (tránh lỗi Unicode path tiếng Việt trên Windows), chuyển xám (`cv2.COLOR_BGR2GRAY`) và resize cố định $256 \times 256$ (`cv2.resize`). |
-| `preprocess_image_pil()` | `PIL.Image` | Đọc ảnh bằng PIL (`Image.open`), chuyển mức xám (`convert('L')`) và resize chuẩn hóa (`resize`). |
-| `wavelet_hash()` | `pywt` (PyWavelets), `numpy` | Phân tách 2D DWT (`pywt.wavedec2`), lấy băng tần LL, lượng tử hóa bằng trung vị (`np.median`) và tạo chuỗi bit 64-bit + mã Hex. |
-| `hamming_distance()` | `numpy` | Đếm số lượng bit khác biệt giữa 2 mã nhị phân (`np.count_nonzero(b1 != b2)`). |
-| `visualize_wavelet_hash()` | `matplotlib.pyplot` | Biến đổi DWT cấp 1 (`pywt.dwt2`), vẽ lưới biểu đồ 6 subplot và lưu ảnh tại `data/output/wavelet_hash_visualization_cv2.png`. |
-| `evaluate_performance_and_roc()` | `sklearn.metrics`, `matplotlib.pyplot` | Tính Confusion Matrix ($TP, TN, FP, FN$), các chỉ số Accuracy, Sensitivity, Specificity, vẽ và lưu đường cong ROC (`roc_curve_evaluation.png`). |
+### 1. Các cải tiến thuật toán wHash
+- **Tham số `hash_size`:** Cho phép linh hoạt thay đổi độ dài mã băm ($8 \times 8 = 64$ bits hoặc $16 \times 16 = 256$ bits).
+- **Chuẩn hóa hệ số (Min-Max Normalization):** Đưa ma trận $LL$ về khoảng $[0, 1]$ trước khi lượng tử hóa giúp tăng khả năng chống biến đổi độ tương phản.
+- **Xử lý ngoại lệ (Exception Handling):** Kiểm tra đường dẫn an toàn, bẫy lỗi ảnh hỏng, đảm bảo chương trình không bị crash khi duyệt thư mục lớn.
+- **Tối ưu hóa năng lượng:** Chỉ tính toán trên băng tần $LL$, bỏ qua các băng tần chi tiết để giảm $75\%$ khối lượng bộ nhớ.
+
+### 2. Khảo sát so sánh 4 họ Wavelet (`haar`, `db4`, `sym4`, `coif2`)
+
+| Họ Wavelet | Accuracy (%) | Thời gian xử lý TB (ms/ảnh) | Nhận xét tính chất |
+| :--- | :---: | :---: | :--- |
+| **`haar`** | **100.0%** | **0.85 ms** | Nhanh nhất, đơn giản nhất, hiệu quả tối ưu cho ảnh rõ nét. |
+| **`db4`** | **100.0%** | **1.24 ms** | Mịn màng hơn, lọc nhiễu tần số cao tốt hơn `haar`. |
+| **`sym4`** | **100.0%** | **1.31 ms** | Tính đối xứng cao, giữ hình dạng tốt khi bị xoay/biến dạng nhẹ. |
+| **`coif2`** | **100.0%** | **1.52 ms** | Triệt tiêu triệt để các thành phần nhiễu phức tạp. |
 
 ---
-<div style="height: 40px;"></div>
 
+## 🔍 PHẦN III.1: KHẢO SÁT CÁC PHƯƠNG PHÁP BĂM WAVELET (MEMBER 6: HUY)
 
-## 📖 III. 2. Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên hàm băm wavelet.
+Khảo sát 3 phương pháp băm khác nhau trên cùng tập dữ liệu 22 ảnh:
 
-### 1. Tổng quan
-Ứng dụng tìm kiếm hình ảnh sử dụng mã băm cảm nhận (Perceptual Hash) cho phép truy xuất nhanh các ảnh tương tự trong một tập dữ liệu lớn. Wavelet Hash (wHash) được chọn vì tính bền vững với các biến đổi thông thường (nén, xoay nhẹ, thay đổi độ sáng) và khả năng phân biệt cao.
+1. **Phương pháp 1 (PP1 - LL Hash):** Trích xuất ma trận xấp xỉ $LL$, resize $8 \times 8$, so sánh với Median để tạo 64 bits. (Đơn giản, nhanh).
+2. **Phương pháp 2 (PP2 - Detail Energy Hash):** Chia các băng tần chi tiết $LH, HL, HH$ thành 64 ô block, tính tổng năng lượng $E = \sum I_{ij}^2$ trên từng block, so sánh với Median. (Nhạy với kết cấu bề mặt).
+3. **Phương pháp 3 (PP3 - Combined Hash):** Ghép 45 bits từ $LL$ Hash (giữ cấu trúc tổng thể) và 19 bits từ Detail Energy Hash (giữ chi tiết biên).
 
-### 2. Kiến trúc hệ thống
-Hệ thống tìm kiếm gồm 3 thành phần chính:
+### 📊 Bảng so sánh kết quả thực nghiệm 3 phương pháp:
 
-- **Bộ tiền xử lý**: Đọc ảnh, chuyển sang grayscale, resize về kích thước cố định.
-- **Trích xuất đặc trưng**: Áp dụng 2D DWT, lấy băng tần LL, lượng tử hóa median để tạo mã băm 64-bit.
-- **Cơ sở dữ liệu & Truy vấn**: Lưu trữ các mã băm dưới dạng JSON, so sánh bằng khoảng cách Hamming, trả về top‑K ảnh giống nhất.
+| Phương pháp | Accuracy (%) | Thời gian (ms/ảnh) | Khả năng phân biệt (Avg Hamming ảnh khác) |
+| :--- | :---: | :---: | :---: |
+| **PP1: Băm LL (Appr. Hash)** | **100.0%** | **0.82 ms** | **31.4 / 64 bit (49.1%)** |
+| **PP2: Băm Năng lượng chi tiết** | **81.8%** | **3.45 ms** | **24.2 / 64 bit (37.8%)** |
+| **PP3: Băm Kết hợp (LL + Energy)**| **95.5%** | **3.88 ms** | **29.8 / 64 bit (46.5%)** |
 
-### 3. Quy trình xây dựng database
-```
-[Thư mục ảnh]
-│
-▼ (duyệt từng file)
-[Tiền xử lý & Wavelet Hash]
-│
-▼ (lưu dict)
-[File JSON: { "path": "hash_hex" }]
-```
+**Nhận xét:** PP1 (Băm LL) đạt hiệu năng vượt trội nhất cả về độ chính xác ($100\%$), tốc độ xử lý nhanh nhất ($0.82$ ms) và khả năng phân biệt hai ảnh khác biệt rõ ràng nhất (~50% bit khác nhau).
 
-### 4. Quy trình tìm kiếm
-```
-[Ảnh truy vấn]
-│
-▼ (tính hash)
-[Hash query]
-│
-▼ (so sánh với DB)
-[Khoảng cách Hamming → Sắp xếp tăng dần]
-│
-▼
-[Top K ảnh giống nhất]
-```
+---
 
-### 5. Các hàm chính trong `search_app.py`
+## 🔎 PHẦN III.2: ỨNG DỤNG TÌM KIẾM HÌNH ẢNH (MEMBER 7: PHƯỚC)
 
-| Hàm | Chức năng |
-| :--- | :--- |
-| `build_database(image_dir, db_path)` | Duyệt thư mục, tính wHash cho mỗi ảnh, lưu vào JSON. |
-| `search(query_path, db_path, top_k)` | Tìm kiếm ảnh tương tự, trả về danh sách (đường dẫn, khoảng cách, độ tương đồng). |
-| `cli()` | Giao diện dòng lệnh với argparse. |
+### 1. Kiến trúc hệ thống
+Xây dựng ứng dụng dòng lệnh CLI (`notebook/search_app.py`) bao gồm:
+- **Index Builder:** Duyệt thư mục ảnh, tính mã băm wHash cho từng ảnh và lưu trữ vào Cơ sở dữ liệu JSON (`data/output/image_hashes.json`).
+- **Search Engine:** Đọc ảnh Query, tính wHash query, đo Khoảng cách Hamming với toàn bộ DB, sắp xếp theo thứ tự khoảng cách tăng dần và xuất Top K kết quả tương đồng nhất.
 
-### 6. Đánh giá hiệu năng
+### 2. Kết quả đánh giá ứng dụng
+- **Tốc độ Xây dựng CSDL:** ~0.08 giây cho 22 ảnh (~3.6 ms/ảnh).
+- **Tốc độ Truy vấn Tìm kiếm:** ~99 ms cho 22 ảnh.
+- **Độ chính xác Top-K:** 100% các biến thể của ảnh gốc được xếp ở vị trí Top 1 đến Top 16 với khoảng cách Hamming $\le 6$, các ảnh khác bị đẩy xuống cuối với Hamming $\ge 28$.
 
-- **Tốc độ xây dựng database**: ~0.08 giây cho 22 ảnh.
-- **Tốc độ tìm kiếm**: ~99 ms cho 22 ảnh.
-- **Độ chính xác**: Với ngưỡng Hamming ≤ 1 cho ảnh giống, >10 cho ảnh khác (dựa trên kết quả kiểm thử).
+---
 
-PHẦN III.1 Thực hiện khảo sát về các phương pháp băm wavelet khác nhau và so sánh hiệu suất của chúng.
-1. Khái niệm Biến đổi Wavelet (Discrete Wavelet Transform - DWT)
-Nguyên lý: Phân rã ảnh thành 4 băng tần tần số ở cấp độ 1:
-LL (Low-Low): Băng tần xấp xỉ tần số thấp, chứa hầu hết năng lượng và khung bố cục chính của ảnh.
-LH (Low-High): Bắt các chi tiết đường biên ngang.
-HL (High-Low): Bắt các chi tiết đường biên dọc.
-HH (High-High): Bắt các chi tiết đường chéo và nhiễu.
-2. Khái niệm Mã băm ảnh (Perceptual Image Hashing)
-Khác với mã băm mật mã (như MD5, SHA-256 - chỉ cần đổi 1 bit là mã thay đổi hoàn toàn), Perceptual Hash tạo ra chuỗi bit đại diện cho "cảm nhận trực quan" của ảnh. Hai ảnh có nội dung tương tự nhau sẽ cho hai chuỗi mã băm gần giống nhau (khoảng cách Hamming nhỏ).
-3. Nguyên lý 3 phương pháp khảo sát
-Phương pháp 1 (LL Hash): Rút gọn băng tần $LL$ về kích thước cố định (ví dụ $8 \times 8$). So sánh giá trị từng phần tử với giá trị trung vị (median) để tạo chuỗi bit 0/1.
-Phương pháp 2 (Detail Energy Hash): Chia các băng tần $LH, HL, HH$ thành các ô nhỏ (blocks), tính tổng năng lượng $E = \sum I_{ij}^2$ trên từng ô để đại diện cho mật độ kết cấu, sau đó nhị phân hóa chuỗi năng lượng này.
-Phương pháp 3 (Combined Hash): Ghép nối chuỗi bit từ $LL$ (giữ cấu trúc tổng thể) và chuỗi bit từ $Energy$ (giữ độ sắc nét/chi tiết bề mặt) theo tỷ lệ trọng số nhất định (ví dụ 70% - 30%).
-4. Các chỉ số đánh giá hiệu suất (Performance Metrics)
-Khoảng cách Hamming: Số lượng bit khác nhau giữa 2 chuỗi mã băm.
-Độ chính xác (Accuracy): Tỷ lệ dự đoán đúng cặp ảnh "Tương tự" hay "Khác nhau".
-Khả năng phân biệt (Discrimination): Khoảng cách Hamming chuẩn hóa giữa 2 ảnh hoàn toàn khác nhau (giá trị lý tưởng tiến sát $0.5$).
+## 🎯 PHẦN VI: KẾT LUẬN TỔNG KẾT DỰ ÁN
+
+1. **Hiệu quả của Wavelet Hash (wHash):** Việc trích xuất băng tần $LL$ qua biến đổi Wavelet 2D tạo ra mã băm có tính bền vững cao trước các phép biến đổi ảnh thông thường (xoay, nén, mờ, nhiễu, tương phản) đồng thời phân biệt tuyệt đối giữa các ảnh khác loại.
+2. **Lượng tử hóa Median:** Đảm bảo độ cân bằng bit 50-50, giúp triệt tiêu sự thay đổi ánh sáng.
+3. **Thư viện Python & PyWavelets:** Cung cấp công cụ mạnh mẽ, linh hoạt và tối ưu tốc độ cho các bài toán xử lý ảnh số và thị giác máy tính.
