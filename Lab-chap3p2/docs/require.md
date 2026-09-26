@@ -14,17 +14,20 @@ Mục tiêu chính:
 
 ---
 
-## 👥 II. PHÂN CÔNG NHIỆM VỤ CHI TIẾT DÀNH CHO 7 THÀNH VIÊN
+## 👥 II. PHÂN CÔNG NHIỆM VỤ & TỶ LỆ ĐÓNG GÓP (6 THÀNH VIÊN THỰC HIỆN)
 
-| STT | Thành viên | Phụ trách chi tiết các phần | Nội dung công việc |
-| :---: | :--- | :--- | :--- |
-| **1** | **Thông** | **Phần I + II.1 + II.2** | Tổng quan mục tiêu; Chuẩn bị dữ liệu (16 similar + 6 different, cấu trúc thư mục, quy tắc đặt tên, script generation); Trích xuất Wavelet 2D (`pywt.wavedec2`), phân tích 4 băng tần (LL, LH, HL, HH) và chọn loại wavelet (`haar`, `db4`, `sym2`). |
-| **2** | **Đức** | **Phần II.3 + II.4** | Quá trình lượng tử hóa hệ số (`pywt.quantize` và tự viết), chọn ngưỡng (Median/Mean), tạo mã nhị phân bit 0/1; Giải thích khoảng cách Hamming $\sum(\text{bit1} \neq \text{bit2})$, ngưỡng tương đồng ($\le 10\%$), thực nghiệm trên 3 cặp ảnh. |
-| **3** | **Duy** | **Phần II.5 + Biểu đồ** | Đánh giá chỉ số hiệu suất: Accuracy, Sensitivity (Recall), Specificity, Ma trận Nhầm lẫn (Confusion Matrix); Đường cong ROC và ý nghĩa AUC, hướng dẫn vẽ bằng `sklearn.metrics.roc_curve` & `matplotlib`. |
-| **4** | **Thọ** | **Phần IV + Code OpenCV/PIL** | Giải thích chi tiết 3 bước của Wavelet Hash (Phân tích tần số $\rightarrow$ Lượng tử hóa $\rightarrow$ Mã băm nhị phân); Viết code hoàn chỉnh xử lý ảnh đầu vào bằng cả OpenCV (`cv2.imread`/`imdecode`) và PIL (`Image.open`), chuyển grayscale, resize $256 \times 256$. |
-| **5** | **Vinh** | **Phần V + Cải tiến code** | Triển khai Python & PyWavelets, cải tiến code (thêm `hash_size`, xử lý ngoại lệ, tối ưu chỉ lấy băng LL, chuẩn hóa hệ số trước lượng tử); Khảo sát so sánh các loại Wavelet (`haar`, `db4`, `sym4`, `coif2`) về độ chính xác và tốc độ. |
-| **6** | **Huy** | **Phần III.1** | Khảo sát các phương pháp băm Wavelet khác nhau: PP1 (Hệ số xấp xỉ LL), PP2 (Năng lượng chi tiết LH/HL/HH), PP3 (Kết hợp LL + Detail Energy); So sánh trên cùng dataset về Accuracy, thời gian xử lý và khả năng phân biệt. |
-| **7** | **Phước** | **Phần III.2** | Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên Wavelet Hash: Thiết kế CLI app, xây dựng CSDL hash (lưu file JSON), chức năng tìm kiếm query vs DB bằng khoảng cách Hamming, trả về Top K ảnh giống nhất và đánh giá tốc độ/độ chính xác. |
+> **Lưu ý phân chia tỷ lệ %**: Bài Lab 4 được thực hiện và chia đều cho **6 thành viên** (mỗi người đóng góp **16.67%**, hoàn thành 100% nhiệm vụ được giao). Thành viên **Vinh không tham gia bài lab này (0% đóng góp)**.
+
+| STT | Thành viên | Tỷ lệ % | Phụ trách chi tiết các phần | Nội dung công việc |
+| :---: | :--- | :---: | :--- | :--- |
+| **1** | **Thông** | **16.67%** | **Phần I + II.1 + II.2** | Tổng quan mục tiêu; Chuẩn bị dữ liệu (16 similar + 6 different, cấu trúc thư mục, quy tắc đặt tên, script generation); Trích xuất Wavelet 2D (`pywt.wavedec2`), phân tích 4 băng tần (LL, LH, HL, HH) và chọn loại wavelet (`haar`, `db4`, `sym2`). |
+| **2** | **Đức** | **16.67%** | **Phần II.3 + II.4** | Quá trình lượng tử hóa hệ số (`pywt.quantize` và tự viết), chọn ngưỡng (Median/Mean), tạo mã nhị phân bit 0/1; Giải thích khoảng cách Hamming $\sum(\text{bit1} \neq \text{bit2})$, ngưỡng tương đồng ($\le 10\%$), thực nghiệm trên 3 cặp ảnh. |
+| **3** | **Duy** | **16.67%** | **Phần II.5 + Biểu đồ** | Đánh giá chỉ số hiệu suất: Accuracy, Sensitivity (Recall), Specificity, Ma trận Nhầm lẫn (Confusion Matrix); Đường cong ROC và ý nghĩa AUC, hướng dẫn vẽ bằng `sklearn.metrics.roc_curve` & `matplotlib`. |
+| **4** | **Thọ** | **16.67%** | **Phần IV + Code OpenCV/PIL** | Giải thích chi tiết 3 bước của Wavelet Hash (Phân tích tần số $\rightarrow$ Lượng tử hóa $\rightarrow$ Mã băm nhị phân); Viết code hoàn chỉnh xử lý ảnh đầu vào bằng cả OpenCV (`cv2.imread`/`imdecode`) và PIL (`Image.open`), chuyển grayscale, resize $256 \times 256$. |
+| **5** | **Huy** | **16.67%** | **Phần III.1 + Cải tiến code** | Triển khai Python & PyWavelets, cải tiến code; Khảo sát các phương pháp băm Wavelet khác nhau: PP1 (LL Hash), PP2 (Detail Energy), PP3 (Combined Hash); So sánh họ Wavelet (`haar`, `db4`, `sym4`, `coif2`). |
+| **6** | **Phước** | **16.67%** | **Phần III.2 + Tìm kiếm ảnh** | Xây dựng ứng dụng tìm kiếm hình ảnh dựa trên Wavelet Hash: Thiết kế CLI app, xây dựng CSDL hash JSON, so khớp khoảng cách Hamming, trả về Top K ảnh giống nhất và đánh giá tốc độ/độ chính xác. |
+| *--* | *Vinh* | *0.00%* | *Không tham gia* | *Thành viên Vinh không tham gia bài Lab 4 (không tính % đóng góp).* |
+| 🏁 | **Cả nhóm** | **100%** | **Toàn bộ pipeline wHash** | **6 thành viên nghiệm thu toàn diện bài Lab 4** |
 
 ---
 
